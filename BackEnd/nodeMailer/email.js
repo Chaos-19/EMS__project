@@ -1,5 +1,8 @@
 import transporter from "./nodeMailer.config.js";
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js";
+import { PASSWORD_RESET_REQUEST_TEMPLATE,
+    PASSWORD_RESET_SUCCESS_TEMPLATE,
+    VERIFICATION_EMAIL_TEMPLATE,
+    WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js";
 
 export const sendVerificationEmail = async (email, verificationToken) => {
     
@@ -19,21 +22,47 @@ export const sendVerificationEmail = async (email, verificationToken) => {
     
 }
 
+export const sendWelcomeEmail = async (email, name) => {
+    try {
+        const info = await transporter.sendMail({
+            from: "Events",
+            to: email,
+            subject: "Welcome to Events",
+            text: " ",
+            html: WELCOME_EMAIL_TEMPLATE.replace("{name}", name),
+        })
+        console.log("Message sent: %s", info.messageId);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
+export const sendPasswordResetEmail = async (email, resetURL) => {
+    try {
+        const info = await transporter.sendMail({
+            from: "Events",
+            to: email,
+            subject: "Password Reset",
+            text: " ",
+            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+        })
+        console.log("Message sent: %s", info.messageId);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-// async function sendTestEmail() {
-//     try {
-//         const info = await transporter.sendMail({
-//             from: process.env.EMAIL, // Sender address
-//             to: "natty.ayalew.code@gmail.com", // Recipient address
-//             subject: "Test Email", // Subject
-//             text: "This is a test2 email sent using Nodemailer!", // Plain text body
-//         });
-
-//         console.log("Email sent successfully: ", info.response);
-//     } catch (error) {
-//         console.error("Error sending email: ", error);
-//     }
-// }
-
-// sendTestEmail();
+export const sendPasswordResetSuccessEmail = async (email) => {
+    try {
+        const info = transporter.sendMail({
+            from: "Events",
+            to: email,
+            subject: "Password Reset Success",
+            text: " ",
+            html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+        })
+        console.log("Message sent: %s", info.messageId);
+    } catch (error) {
+        console.log(error); 
+       }
+}

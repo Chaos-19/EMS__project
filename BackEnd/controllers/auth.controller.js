@@ -1,7 +1,13 @@
 import User from "../models/user.model.js";
+
 import bcrypt from "bcryptjs"
+import crypto from "crypto";
+
 import generateToken from "../utils/Token.js";
-import  { sendVerificationEmail } from "../nodeMailer/email.js";
+import  { sendPasswordResetEmail, 
+    sendPasswordResetSuccessEmail,
+    sendVerificationEmail,
+    sendWelcomeEmail } from "../nodeMailer/email.js";
 
 
 export const signup = async (req, res, next) => {
@@ -60,7 +66,7 @@ export const verifyEmail = async (req, res, next) => {
 
         await user.save();
 
-        // await sendWelcomeEmail(user.email, user.name );
+        await sendWelcomeEmail(user.email, user.name );
         res.status(200).json('Email Verified Successfully!')
     } catch (error) {
         next(error)
@@ -102,13 +108,25 @@ export const forgotPassword = async (req, res, next) => {
     const {email} = req.body;
     
     try {
-        const existingEmail = await User.findOne({email});
+        const user = await User.findOne({email});
 
-        if(!existingEmail){
+        if(!user){
             return res.status(400).json({error: "Email not found!"})
         }
 
         // generate reset token
+        const resetToken = crypto.randomBytes(16).toString('hex');
+        const resetTokenExpiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt;
+
+        await user.save();
+
+        // send Email
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+        res.status(200).json('Password reset link sent successfully!');
 
     } catch (error) {
         next(error)
@@ -117,8 +135,45 @@ export const forgotPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
     try {
-        
+        const { token } = req.params;
+        const { password, confirmPassword } = req.body;
+
+       
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired reset token' });
+        }
+
+        if (!password || !confirmPassword) {
+            return res.status(400).json({ error: 'Password and confirm password are required' });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ error: 'Passwords do not match!' });
+        }
+
+    
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+      
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenExpiresAt = undefined;
+
+        await user.save();
+
+        try {
+            await sendPasswordResetSuccessEmail(user.email);
+        } catch (emailError) {
+            console.error("Error sending success email:", emailError);
+            
+        }
+        return res.status(200).json({ message: 'Password reset successfully!' });
     } catch (error) {
-        next(error)
+        next(error); 
     }
-}
+};
