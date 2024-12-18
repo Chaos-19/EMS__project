@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
 import generateToken from "../utils/Token.js";
+import  { sendVerificationEmail } from "../nodeMailer/email.js";
+
 
 export const signup = async (req, res, next) => {
     const {name, username, email, password, confirmPassword} = req.body;
@@ -30,8 +32,9 @@ export const signup = async (req, res, next) => {
             await newUser.save();
             await generateToken(newUser._id, res);
 
-            // await sendVerificationEmail(newUser.email, verificationToken);
-            res.status(201).json('User created successfully!');
+            await sendVerificationEmail(newUser.email, newUser.verificationToken);
+            
+            res.status(201).json('OTP code successfully sent to your Email!');//newUser.verificationToken);
     } catch (error) {
         next(error);
     }
@@ -75,10 +78,10 @@ export const login = async (req, res, next) => {
         if(!isPassword){
             return res.status(400).json({error: 'Wrong Credentials!'})
         }
-        if(validUser.isVerified !== "true"){
+        if(validUser.isVerified === "false"){
             return res.status(400).json({error: 'The User is not Verified'})
         }
-        generateToken(validUser._id, res);
+        await generateToken(validUser._id, res);
         res.status(200).json({validUser});  
    } catch (error) {
     next(error);
@@ -87,7 +90,7 @@ export const login = async (req, res, next) => {
 
 export const logOut = async (req, res, next) => {
     try {
-        res.clearcookie("User-token");
+        res.clearCookie('User-token');
         res.status(200).json('User successfully loggedout');
     } catch (error) {
         next(error);
