@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -24,12 +26,14 @@ export default function Login() {
     const { username,password } = formData;
 
     if (!username ||  !password) {
-      setError('All fields are required');
+      toast.error('All fields are required');
       return;
     }
 
     // Proceed with form submission
     setError('');
+    toast.success('Login Successful');
+    navigate('/');
     console.log('Form submitted', formData);
   };
 
@@ -69,21 +73,21 @@ export default function Login() {
             />
           </div>
           
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          
           <button
             type="submit"
-            className={`${theme.primary} text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
+            className={`${theme.primary} bg-blue-500 text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
           >
            Login
           </button>
         </form>
       <div className='flex items-center justify-center gap-4 mt-3'>
-      <span className={`block text-sm font-small mb-1 ${theme.text}`}>{"Don't have an account?"}</span>
-      <Link to="/signup" className={`block text-sm font-small mb-1 ${theme.text} hover:underline hover:text-black`} > Sign up</Link>
+      <span className={`block text-sm font-semibold mb-1 ${theme.text}`}>{"Don't have an account?"}</span>
+      <Link to="/signup" className={`block text-sm font-semibold mb-1 ${theme.text} hover:underline hover:text-black`} > Sign up</Link>
       </div>
         <Link
-            to="/forget-password"
-            className={`block text-md font-semibold mb-1 ${theme.text} hover:underline hover:text-blue-600 text-center`}
+            to="/forgetPassword"
+            className={`bg-yellow-700 rounded-lg text-center p-2 block text-md font-semibold mt-5 mb-1 ${theme.text} hover:underline `}
           >
            Forget Password
         </Link>

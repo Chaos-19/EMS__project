@@ -48,7 +48,7 @@ export default function Signup() {
 
     // Proceed with form submission
     setError('');
-    navigate('/VerifyEmail');
+    navigate('/verifyEmail');
     console.log('Form submitted', formData);
   };
 
@@ -122,7 +122,7 @@ export default function Signup() {
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
            <button
               type="submit"
-              className={`${theme.primary} text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
+              className={`${theme.primary} bg-blue-500 text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
             >
               Sign Up
             </button>

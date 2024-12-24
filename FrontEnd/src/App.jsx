@@ -11,19 +11,17 @@ import Contact from './pages/Dashboard pages/Contact';
 import Calendar from './pages/Dashboard pages/Calendar';
 import Signup from './pages/AuthPages/Signup';
 import Login from './pages/AuthPages/Login';
+import EmailVerification from './pages/AuthPages/EmailVerification';
+import Footer from './components/DashBoardComponents/Footer';
+import ForgetPassword from './pages/AuthPages/ForgetPassword';
+import ResetPassword from './pages/AuthPages/ResetPassword';
 
 function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <Header />
       <main>{children}</main>
-      <footer className="bg-white dark:bg-gray-800 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-gray-600 dark:text-gray-300">
-            © 2024 Company Events. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -43,6 +41,9 @@ function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/verifyEmail" element={<EmailVerification/>} />
+            <Route path="/forgetPassword" element={<ForgetPassword />} />
+            <Route path="/resetPassword" element={<ResetPassword />} />
           </Routes>
         </Layout>
       </Router>

@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import EventCard from '../../components/EventComponents/EventCard';
 import { events } from '../../data/events';
+import { motion } from 'framer-motion';
 
 export default function Landing() {
-  const { theme } = useTheme();
+  const { theme, isLightMode } = useTheme();
   const upcomingEvents = events.slice(0, 3); // Show only first 3 events
 
   return (
@@ -20,7 +21,12 @@ export default function Landing() {
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <motion.div
+          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Create Memorable Company Events
           </h1>
@@ -41,7 +47,7 @@ export default function Landing() {
               Learn More
             </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Upcoming Events Section */}
@@ -55,9 +61,17 @@ export default function Landing() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map(event => (
-              <div key={event.id} className="flex flex-col h-full">
+              <motion.div
+                key={event.id}
+                className="flex flex-col h-full"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: event.id * 0.2 }}
+                whileHover={{ scale: 1.05, boxShadow: isLightMode ? '0 0 15px rgba(128, 128, 128, 0.5)' : '0 0 15px rgba(255, 255, 255, 0.5)' }}
+              >
                 <EventCard event={event} />
-              </div>
+              </motion.div>
             ))}
           </div>
           <div className="text-center mt-12">
@@ -71,6 +85,11 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Divider */}
+      {isLightMode && (
+        <div className="border-t border-gray-300 my-12"></div>
+      )}
+
       {/* Features Section */}
       <section className={`${theme.background} py-20`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,13 +98,21 @@ export default function Landing() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className={`${theme.card} rounded-lg p-6 text-center`}>
+              <motion.div
+                key={index}
+                className={`${theme.card} rounded-lg p-6 text-center`}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                whileHover={{ scale: 1.05, boxShadow: isLightMode ? '0 0 15px rgba(128, 128, 128, 0.5)' : '0 0 15px rgba(255, 255, 255, 0.5)' }}
+              >
                 <div className={`${theme.text} text-4xl mb-4`}>{feature.icon}</div>
                 <h3 className={`text-xl font-semibold ${theme.text} mb-2`}>
                   {feature.title}
                 </h3>
                 <p className={theme.textSecondary}>{feature.description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

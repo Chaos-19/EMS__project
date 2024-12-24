@@ -33,7 +33,7 @@ export default function EventCard({ event }) {
           </div>
         </div>
         
-        <button className={`mt-4 w-full ${theme.primary} text-white py-2 px-4 rounded-md transition-colors`}>
+        <button className={`mt-4 w-full ${theme.primary} bg-blue-500 text-white py-2 px-4 rounded-md transition-colors`}>
           Let's Go!
         </button>
       </div>

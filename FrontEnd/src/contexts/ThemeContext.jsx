@@ -1,27 +1,23 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-const ThemeContext = createContext();
-
-export const themes = {
+const themes = {
   light: {
     name: 'light',
-    background: 'bg-gray-100',
-    card: 'bg-white',
-    text: 'text-gray-900',
-    textSecondary: 'text-gray-600',
-    primary: 'bg-blue-600 hover:bg-blue-700',
-    header: 'bg-white'
+    background: 'bg-white',
+    text: 'text-black',
+    textSecondary: 'text-gray-700',
+    card: 'bg-gray-100'
   },
   dark: {
     name: 'dark',
     background: 'bg-gray-900',
-    card: 'bg-gray-800',
     text: 'text-white',
-    textSecondary: 'text-gray-300',
-    primary: 'bg-blue-500 hover:bg-blue-600',
-    header: 'bg-gray-800'
+    textSecondary: 'text-gray-400',
+    card: 'bg-gray-800'
   }
 };
+
+const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(themes.light);
@@ -30,8 +26,10 @@ export function ThemeProvider({ children }) {
     setTheme(prevTheme => prevTheme.name === 'light' ? themes.dark : themes.light);
   };
 
+  const isLightMode = theme.name === 'light';
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isLightMode }}>
       {children}
     </ThemeContext.Provider>
   );

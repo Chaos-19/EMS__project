@@ -56,7 +56,7 @@ export default function Header() {
             <ThemeToggle />
             <Link
               to="/signup"
-              className={`${theme.primary} text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity`}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
             >
               Sign Up
             </Link>
@@ -76,7 +76,7 @@ export default function Header() {
                 <ThemeToggle />
                 <Link
                   to="/signup"
-                  className={`${theme.primary} text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity`}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
                   onClick={closeMenu}
                 >
                   Sign Up
