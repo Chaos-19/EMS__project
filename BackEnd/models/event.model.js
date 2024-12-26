@@ -31,9 +31,20 @@ const eventSchema = new mongoose.Schema({
         required: true,
         enum: ["Private", "Public"],
     },
+    eventCategory: {
+        type: String,
+        required: true,
+        enum: ["Concert", "Wedding", "Party", "Conference", "Others"],
+    },
     eventStatus: {
         type: String,
+        required: true,
         enum: ["Active", "Pending", "Cancelled","Ended"],
+        default: "Pending",
+    },
+    host:{
+        type: String,
+        required: true,
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

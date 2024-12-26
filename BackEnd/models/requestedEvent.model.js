@@ -30,10 +30,20 @@ const requestedEventSchema = new mongoose.Schema({
         required: true,
         enum: ["Private", "Public"],
     },
+    eventStatus: {
+        type: String,
+        required: true,
+        enum: ["Active", "Pending", "Cancelled","Ended"],
+        default: "Pending",
+    },
     requestEventStatus: {
         type: String,
         enum: ["Pending", "Approved", "Rejected"],
         default: "Pending",
+    },
+    host:{
+        type: String,
+        required: true,
     },
     requester: {
         type: mongoose.Schema.Types.ObjectId,

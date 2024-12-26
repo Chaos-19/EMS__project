@@ -96,8 +96,8 @@ export const login = async (req, res, next) => {
 
 export const logOut = async (req, res, next) => {
     try {
-        res.clearCookie('User-token');
-        res.status(200).json('User successfully loggedout');
+        await res.clearCookie('user_token');
+        res.status(200).json('User successfully logged out');
     } catch (error) {
         next(error);
     }
@@ -123,7 +123,7 @@ export const forgotPassword = async (req, res, next) => {
 
         await user.save();
 
-        // send Email
+    
         await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
 
         res.status(200).json('Password reset link sent successfully!');
@@ -162,7 +162,7 @@ export const resetPassword = async (req, res, next) => {
       
         user.password = hashedPassword;
         user.resetPasswordToken = undefined;
-        user.resetPasswordTokenExpiresAt = undefined;
+        user.resetPasswordExpiresAt = undefined;
 
         await user.save();
 

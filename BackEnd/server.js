@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./DB/conn.js";
 import authRoute from "./routes/auth.route.js";
+import eventRoute from "./routes/event.route.js";
 import cookieParser from "cookie-parser";
 
 
@@ -21,7 +22,8 @@ app.use(cookieParser());
 // })
 
 
-app.use("/api/auth", authRoute); 
+app.use("/api/auth", authRoute);
+app.use("/api/event", eventRoute);
 
 
 // error middleware
