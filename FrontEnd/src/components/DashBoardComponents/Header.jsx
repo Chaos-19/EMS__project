@@ -25,7 +25,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`${theme.header} shadow-md fixed w-full z-50 ${isScrolled ? 'bg-white bg-opacity-30 backdrop-filter backdrop-blur-lg' : ''}`}>
+    <header className={`${theme.header} shadow-md fixed w-full z-50 ${isScrolled ? 'bg-white bg-opacity-30 backdrop-filter backdrop-blur-lg' : `${theme.background}`}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className={`text-2xl font-bold ${theme.text}`}>
@@ -47,7 +47,7 @@ export default function Header() {
           {/* Theme toggle always visible */}
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-6 font-semibold">
             <NavLink to="/" label="Home" />
             <NavLink to="/services" label="Services" />
             <NavLink to="/about" label="About Us" />

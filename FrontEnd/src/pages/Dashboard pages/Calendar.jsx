@@ -7,6 +7,9 @@ export default function Calendar() {
   const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
+  
+  <div className={`${theme.background} pt-20`}>
+
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h2 className={`text-3xl font-bold ${theme.text}`}>Event Calendar</h2>
@@ -24,7 +27,7 @@ export default function Calendar() {
                 </p>
                 <p className={`${theme.textSecondary} mt-1`}>{event.location}</p>
               </div>
-              <button className={`${theme.primary} text-white px-4 py-2 rounded-md`}>
+              <button className={`${theme.primary} ${theme.text} px-4 py-2 rounded-md`}>
                 Details
               </button>
             </div>
@@ -32,5 +35,6 @@ export default function Calendar() {
         ))}
       </div>
     </div>
+  </div>
   );
 }

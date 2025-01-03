@@ -77,7 +77,7 @@ export default function Landing() {
           <div className="text-center mt-12">
             <Link
               to="/events"
-              className={`${theme.primary} text-white px-8 py-3 rounded-md text-lg font-semibold hover:opacity-90 transition-opacity inline-block`}
+              className={` ${theme.text} bg-blue-500 px-8 py-3 rounded-md text-lg font-semibold hover:opacity-90 transition-opacity inline-block`}
             >
               View All Events
             </Link>
@@ -87,7 +87,7 @@ export default function Landing() {
 
       {/* Divider */}
       {isLightMode && (
-        <div className="border-t border-gray-300 my-12"></div>
+        <div className="border-t border-gray-300 "></div>
       )}
 
       {/* Features Section */}
