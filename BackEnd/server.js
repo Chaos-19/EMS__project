@@ -5,9 +5,6 @@ import authRoute from "./routes/auth.route.js";
 import eventRoute from "./routes/event.route.js";
 import cookieParser from "cookie-parser";
 
-
-
-
 dotenv.config();
 
 const app = express();
@@ -16,15 +13,8 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cookieParser());
 
-// app.get("/", (req, res) =>
-// {
-//     res.send("Home Page");
-// })
-
-
 app.use("/api/auth", authRoute);
 app.use("/api/event", eventRoute);
-
 
 // error middleware
 app.use((err, req, res, next) => {
@@ -37,7 +27,6 @@ app.use((err, req, res, next) => {
         message
     })
 })
-
 
 app.listen(port, ()=>{
     

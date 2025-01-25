@@ -16,10 +16,8 @@ export const createEvent = async (req, res, next) => {
             return res.status(400).json({error: 'All fields are required!'});
         }
 
-
         const existingEvent = await Event.findOne({title});
         const existingRequestedEvent = await RequestedEvent.findOne({title});
-
 
         if(existingEvent || existingRequestedEvent){
             return res.status(400).json({error: 'Event already exists!'});

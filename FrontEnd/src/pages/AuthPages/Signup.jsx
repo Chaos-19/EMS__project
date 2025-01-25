@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Link, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import useSignup from '../../hooks/authHooks/useSignup';
 
 export default function Signup() {
   const { theme } = useTheme();
-  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
@@ -13,8 +13,9 @@ export default function Signup() {
     password: '',
     confirmPassword: ''
   });
-  const [error, setError] = useState('');
 
+  const { loading, error, signup } = useSignup(); 
+  
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -22,34 +23,9 @@ export default function Signup() {
     }));
   };
 
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, username, email, password, confirmPassword } = formData;
-
-    if (!fullName || !username || !email || !password || !confirmPassword) {
-      toast.error('All fields are required');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      toast.error('Invalid email address');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-     toast.error('Passwords do not match');
-      return;
-    }
-
-    // Proceed with form submission
-    setError('');
-    navigate('/verifyEmail');
-    console.log('Form submitted', formData);
+    await signup(formData);
   };
 
   return (
@@ -73,6 +49,7 @@ export default function Signup() {
               value={formData.fullName}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md bg-gray-700 bg-opacity-30 focus:bg-white focus:bg-opacity-100 focus:outline-none focus:ring focus:border-blue-300"
+              required
             />
           </div>
           <div className="mb-4">
@@ -84,6 +61,7 @@ export default function Signup() {
               value={formData.username}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md bg-gray-700 bg-opacity-30 focus:bg-white focus:bg-opacity-100 focus:outline-none focus:ring focus:border-blue-300"
+              required
             />
           </div>
           <div className="mb-4">
@@ -95,6 +73,7 @@ export default function Signup() {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md bg-gray-700 bg-opacity-30 focus:bg-white focus:bg-opacity-100 focus:outline-none focus:ring focus:border-blue-300"
+              required
             />
           </div>
           <div className="mb-4">
@@ -106,6 +85,7 @@ export default function Signup() {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md bg-gray-700 bg-opacity-30 focus:bg-white focus:bg-opacity-100 focus:outline-none focus:ring focus:border-blue-300"
+              required
             />
           </div>
           <div className="mb-4">
@@ -117,22 +97,23 @@ export default function Signup() {
               value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-md bg-gray-700 bg-opacity-30 focus:bg-white focus:bg-opacity-100 focus:outline-none focus:ring focus:border-blue-300"
+              required
             />
           </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-           <button
-              type="submit"
-              className={`${theme.primary} bg-blue-500 text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
-            >
-              Sign Up
-            </button>
-
           
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+          
+          <button
+            type="submit"
+            className={`${theme.primary} bg-blue-500 text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
+          >
+            {loading ? "Loading..." : "Sign Up"}
+          </button>
         </form>
-      <div className='flex items-center justify-center gap-4 mt-3'>
-      <span className={`block text-sm font-small mb-1 ${theme.text}`}>Already have an account?</span>
-      <Link to="/login" className={`block text-sm font-small mb-1 ${theme.text} hover:underline hover:text-black`} > Log in</Link>
-      </div>
+        <div className='flex items-center justify-center gap-4 mt-3'>
+          <span className={`block text-sm font-small mb-1 ${theme.text}`}>Already have an account?</span>
+          <Link to="/login" className={`block text-sm font-small mb-1 ${theme.text} hover:underline hover:text-black`}>Log in</Link>
+        </div>
       </div>
     </div>
   );

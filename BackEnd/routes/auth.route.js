@@ -1,10 +1,12 @@
 import express from "express";
 import { 
     forgotPassword, login, 
-    logOut, 
+    logOut,
+    resendVerificationCode,
     resetPassword, 
     signup, 
     verifyEmail } from "../controllers/auth.controller.js";
+
 
 
 
@@ -16,6 +18,7 @@ router.get("/login", login);
 router.post("/logout", logOut);
 
 router.post("/verify-email", verifyEmail);
+router.post("/resend-verification-code", resendVerificationCode);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
