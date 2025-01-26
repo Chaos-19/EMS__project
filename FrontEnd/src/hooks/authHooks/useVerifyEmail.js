@@ -31,7 +31,7 @@ const useVerifyEmail = () => {
             sessionStorage.removeItem('pendingVerificationEmail');
 
             // Dispatch verify email success action
-            dispatch(verifyEmailSuccess(data));
+            dispatch(verifyEmailSuccess(data.user));
 
             // Handle successful verification (e.g., redirect to home page)
             toast.success('Email verified successfully');

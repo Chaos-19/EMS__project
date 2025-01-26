@@ -1,36 +1,37 @@
 import { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateProfileStart, updateProfileSuccess, updateProfileFailure } from '../../redux/userStore/userSlice';
 import toast from 'react-hot-toast';
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
-const useUpdateProfile = (user) => {
+const useUpdateProfile = () => {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.user.currentUser); // Accessing currentUser from Redux
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
     email: '',
     password: '',
-    confirmPassword: '', // Added confirmPassword field
+    confirmPassword: '',
     profilepic: '',
   });
-  const [profilePicFile, setProfilePicFile] = useState(null);
-  const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for confirmPassword visibility
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Set initial form data when currentUser changes
   useEffect(() => {
-    if (user) {
+    if (currentUser) {
       setFormData({
-        fullName: user.fullName,
-        username: user.username,
-        email: user.email,
+        fullName: currentUser.fullName,
+        username: currentUser.username,
+        email: currentUser.email,
         password: '',
         confirmPassword: '',
-        profilepic: user.profilepic,
+        profilepic: currentUser.profilepic,
       });
     }
-  }, [user]);
+  }, [currentUser]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -39,56 +40,44 @@ const useUpdateProfile = (user) => {
     }));
   };
 
-  const handleProfilePicChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfilePicFile(file);
-      setFormData((prev) => ({
-        ...prev,
-        profilepic: URL.createObjectURL(file),
-      }));
-    }
-  };
-
-  const handleAvatarClick = () => {
-    fileInputRef.current.click();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation for matching passwords
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
     dispatch(updateProfileStart());
+
     try {
-      // If you want to send the profile pic, handle it as FormData.
-      // Otherwise, if not uploading a file, just use JSON.stringify
       const updatedData = {
         fullName: formData.fullName,
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        profilepic: formData.profilepic, // Assuming the profile picture is a URL or base64
+        profilepic: formData.profilepic,
       };
 
-      const res = await fetch('/api/user/updateProfile', {
+      const res = await fetch(`/api/user/updateProfile/${currentUser._id}`, {
         method: 'PUT',
         headers: {
-          "Content-Type": "application/json", // Using JSON for the payload
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedData), // Sending the data as JSON
+        body: JSON.stringify(updatedData),
       });
 
       const data = await res.json();
+
       if (data.error) {
         dispatch(updateProfileFailure(data.error));
+        toast.error(data.error);
+        return;
       }
 
+      // Update Redux store with the new user data
       dispatch(updateProfileSuccess(data));
+
       toast.success('Profile updated successfully');
     } catch (error) {
       dispatch(updateProfileFailure(error.message));
@@ -96,25 +85,19 @@ const useUpdateProfile = (user) => {
     }
   };
 
-  // Function to toggle password visibility
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  // Function to toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordVisible((prev) => !prev);
   };
 
   return {
     formData,
-    profilePicFile,
-    fileInputRef,
     passwordVisible,
     confirmPasswordVisible,
     handleChange,
-    handleProfilePicChange,
-    handleAvatarClick,
     handleSubmit,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,

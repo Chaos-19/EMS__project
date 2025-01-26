@@ -21,6 +21,7 @@ const userSlice = createSlice({
             state.currentUser = action.payload;
             state.isAuthenticated = true;
             state.loading = false;
+            state.error = null;
             localStorage.setItem('user', JSON.stringify(action.payload)); // Persist user
         },
         loginFailure: (state, action) => {

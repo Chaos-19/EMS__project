@@ -7,20 +7,24 @@ import useUpdateProfile from '../../hooks/userHooks/useUpdateProfile';
 
 const UpdateProfile = () => {
   const { theme } = useTheme();
-  const { user } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user); // Accessing currentUser from Redux
+  const navigate = useNavigate();
   
   const {
     formData,
-    fileInputRef,
     passwordVisible,
     confirmPasswordVisible,
     handleChange,
-    handleProfilePicChange,
-    handleAvatarClick,
     handleSubmit,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
-  } = useUpdateProfile(user);
+  } = useUpdateProfile(); // Using the updated hook
+
+  if (!currentUser) {
+    toast.error('User not found. Please log in again.');
+    navigate('/login'); // Redirect to login page if no user
+    return null;
+  }
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${theme.background} pt-20`}>
@@ -33,21 +37,12 @@ const UpdateProfile = () => {
                 src={formData.profilepic}
                 alt="Profile"
                 className="h-24 w-24 rounded-full mx-auto cursor-pointer"
-                onClick={handleAvatarClick}
               />
             ) : (
               <UserCircleIcon
                 className="h-24 w-24 mx-auto text-gray-500 cursor-pointer"
-                onClick={handleAvatarClick}
               />
             )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePicChange}
-              ref={fileInputRef}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
           </div>
 
           <div className="mb-4">

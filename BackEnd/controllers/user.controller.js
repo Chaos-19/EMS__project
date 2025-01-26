@@ -8,12 +8,16 @@ const validateEmail = (email) => {
 };
 
 export const updateProfile = async (req, res, next) => {
-    
-    const userId = req.params.id;
-
     try {
-        // Fetch user from the database
-        const user = await User.findById(userId);
+        const userIdFromParams = req.params.id;
+        const loggedInUserId = req.userId; // User ID from the middleware (VerifiedUser)
+
+        // Check if the logged-in user is trying to update their own profile
+        if (userIdFromParams !== loggedInUserId.toString()) {
+            return res.status(403).json({ error: 'You are not authorized to update this profile.' });
+        }
+
+        const user = await User.findById(userIdFromParams);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -57,7 +61,7 @@ export const updateProfile = async (req, res, next) => {
         } catch (error) {
             return res.status(500).json({ error: 'Error saving the user data' });
         }
-        
+
     } catch (error) {
         next(error); // Pass error to next middleware for centralized error handling
     }

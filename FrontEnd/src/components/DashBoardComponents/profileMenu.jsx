@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/userStore/userSlice';
 import { UserCircleIcon } from "@heroicons/react/24/outline";
@@ -9,11 +9,13 @@ const ProfileMenu = () => {
   const { theme, isLightMode } = useTheme();
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate('/');
     // Add any additional logout logic here
   };
 

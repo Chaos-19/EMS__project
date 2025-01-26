@@ -11,8 +11,6 @@ const useLogin = () => {
     const dispatch = useDispatch();
 
     const login = async (username, password) => {
-        setLoading(true);
-        setError(null); // Clear previous errors
         dispatch(loginStart());
         try {
             const res = await fetch('/api/auth/login', {
@@ -25,11 +23,14 @@ const useLogin = () => {
 
             const data = await res.json();
             if (data.error) {
-                dispatch(loginFailure(data.error));
+                setError(data.error); // Set error state if needed
+                toast.error(data.error);
+                return dispatch(loginFailure(data.error));
             }
-
+            
             // Dispatch login success action
-            dispatch(loginSuccess(data));
+            localStorage.setItem('token', data.token); // Save token in localStorage
+            dispatch(loginSuccess(data.validUser)); 
 
             // Handle successful login (e.g., redirect to dashboard)
             toast.success('Login successful');

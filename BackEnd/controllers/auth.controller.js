@@ -70,7 +70,7 @@ export const verifyEmail = async (req, res, next) => {
         await user.save();
 
         await sendWelcomeEmail(user.email, user.name );
-        res.status(200).json('Email Verified Successfully!')
+        res.status(200).json({user, message:'Email Verified Successfully!'})
     } catch (error) {
         next(error)
     }
@@ -121,8 +121,8 @@ export const login = async (req, res, next) => {
         if(validUser.isVerified === "false"){
             return res.status(400).json({error: 'The User is not Verified'})
         }
-        await generateToken(validUser._id, res);
-        res.status(200).json({validUser});  
+        const token = await generateToken(validUser._id, res);
+        res.status(200).json({validUser, token});  
    } catch (error) {
     next(error);
    }
