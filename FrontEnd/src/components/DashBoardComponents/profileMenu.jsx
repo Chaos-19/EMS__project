@@ -45,7 +45,7 @@ const ProfileMenu = () => {
             My Events
           </Link>
           <Link
-            to="/edit-profile"
+            to="/updateProfile"
             className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
           >
             Edit Profile

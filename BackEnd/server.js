@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./DB/conn.js";
 import authRoute from "./routes/auth.route.js";
 import eventRoute from "./routes/event.route.js";
+import userRoute from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -15,7 +16,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/event", eventRoute);
-app.use("/api/user", eventRoute);
+app.use("/api/user", userRoute);
 
 // error middleware
 app.use((err, req, res, next) => {
