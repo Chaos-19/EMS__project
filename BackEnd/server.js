@@ -15,6 +15,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/event", eventRoute);
+app.use("/api/user", eventRoute);
 
 // error middleware
 app.use((err, req, res, next) => {

@@ -15,6 +15,7 @@ import EmailVerification from './pages/AuthPages/EmailVerification';
 import Footer from './components/DashBoardComponents/Footer';
 import ForgetPassword from './pages/AuthPages/ForgetPassword';
 import ResetPassword from './pages/AuthPages/ResetPassword';
+import UpdateProfile from './pages/userPages/updateProfile';
 
 function Layout({ children }) {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/verifyEmail" element={<EmailVerification/>} />
             <Route path="/forgetPassword" element={<ForgetPassword />} />
             <Route path="/resetPassword" element={<ResetPassword />} />
+            <Route path="/updateProfile" element={<UpdateProfile />} />
           </Routes>
         </Layout>
       </Router>
