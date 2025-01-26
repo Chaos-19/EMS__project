@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
+import { verifyEmailStart, verifyEmailSuccess, verifyEmailFailure, resendVerificationStart, resendVerificationSuccess, resendVerificationFailure } from '../../redux/userStore/userSlice';
 
 const useVerifyEmail = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    //  Verify Email and Remove from Session Storage
+    // Verify Email and Remove from Session Storage
     const verifyEmail = async (code) => {
         setLoading(true);
         setError(null); // Clear previous errors
+        dispatch(verifyEmailStart());
         try {
             const res = await fetch('/api/auth/verify-email', {
                 method: 'POST',
@@ -20,30 +24,33 @@ const useVerifyEmail = () => {
 
             const data = await res.json();
             if (data.error) {
-                throw new Error(data.error);
+                dispatch(verifyEmailFailure(data.error));
             }
-            // if (!res.ok) throw new Error(data.message || 'Verification failed');
-            //  Remove email from sessionStorage after successful verification
+
+            // Remove email from sessionStorage after successful verification
             sessionStorage.removeItem('pendingVerificationEmail');
 
-            // Handle successful verification (e.g., redirect to login page)
+            // Dispatch verify email success action
+            dispatch(verifyEmailSuccess(data));
+
+            // Handle successful verification (e.g., redirect to home page)
             toast.success('Email verified successfully');
             navigate('/');
         } catch (error) {
-            setError(error.message);
+            dispatch(verifyEmailFailure(error.message));
             toast.error(error.message);
         } finally {
             setLoading(false);
         }
     };
 
-    //  Updated Resend Code Hook
-     const useResendCode = () => {
+    // Updated Resend Code Hook
+    const useResendCode = () => {
         const [canResend, setCanResend] = useState(true);
         const [resendCooldown, setResendCooldown] = useState(0);
         const [email, setEmail] = useState(null);
-    
-        // ✅ Retrieve email from sessionStorage when component mounts
+
+        // Retrieve email from sessionStorage when component mounts
         useEffect(() => {
             const storedEmail = sessionStorage.getItem('pendingVerificationEmail');
             if (storedEmail) {
@@ -52,17 +59,18 @@ const useVerifyEmail = () => {
                 toast.error('No email found. Please sign up again.');
             }
         }, []);
-    
+
         const resendVerificationCode = async () => {
             if (!canResend || !email) {
                 toast.error('No email found. Please sign up again.');
                 return;
             }
-    
+
             setCanResend(false);
+            dispatch(resendVerificationStart());
             const success = await sendResendRequest(email);
             if (success) {
-                // ✅ Start cooldown timer for 60 seconds
+                // Start cooldown timer for 60 seconds
                 setResendCooldown(60);
                 const timer = setInterval(() => {
                     setResendCooldown((prev) => {
@@ -74,11 +82,13 @@ const useVerifyEmail = () => {
                         return prev - 1;
                     });
                 }, 1000);
+                dispatch(resendVerificationSuccess());
             } else {
                 setCanResend(true);
+                dispatch(resendVerificationFailure('Failed to resend verification code'));
             }
         };
-    
+
         const sendResendRequest = async (email) => {
             try {
                 const res = await fetch('/api/auth/resend-verification-code', {
@@ -86,10 +96,10 @@ const useVerifyEmail = () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
-    
+
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message || 'Failed to resend verification code');
-    
+
                 toast.success('Verification code sent again!');
                 return true;
             } catch (error) {

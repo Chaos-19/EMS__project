@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import useLogin from '../../hooks/authHooks/useLogin';
 
 export default function Login() {
   const { theme } = useTheme();
-  const navigate = useNavigate();
+  const { loading, error, login } = useLogin();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
-  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -19,22 +19,17 @@ export default function Login() {
     }));
   };
 
- 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username,password } = formData;
+    const { username, password } = formData;
 
-    if (!username ||  !password) {
+    if (!username || !password) {
       toast.error('All fields are required');
       return;
     }
 
     // Proceed with form submission
-    setError('');
-    toast.success('Login Successful');
-    navigate('/');
-    console.log('Form submitted', formData);
+    await login(username, password);
   };
 
   return (
@@ -73,23 +68,24 @@ export default function Login() {
             />
           </div>
           
-          
           <button
             type="submit"
             className={`${theme.primary} bg-blue-500 text-white font-semibold w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
+            disabled={loading}
           >
-           Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-      <div className='flex items-center justify-center gap-4 mt-3'>
-      <span className={`block text-sm font-semibold mb-1 ${theme.text}`}>{"Don't have an account?"}</span>
-      <Link to="/signup" className={`block text-sm font-semibold mb-1 ${theme.text} hover:underline hover:text-black`} > Sign up</Link>
-      </div>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        <div className='flex items-center justify-center gap-4 mt-3'>
+          <span className={`block text-sm font-semibold mb-1 ${theme.text}`}>{"Don't have an account?"}</span>
+          <Link to="/signup" className={`block text-sm font-semibold mb-1 ${theme.text} hover:underline hover:text-black`} > Sign up</Link>
+        </div>
         <Link
-            to="/forgetPassword"
-            className={`bg-yellow-700 rounded-lg text-center p-2 block text-md font-semibold mt-5 mb-1 ${theme.text} hover:underline `}
-          >
-           Forget Password
+          to="/forgetPassword"
+          className={`bg-yellow-700 rounded-lg text-center p-2 block text-md font-semibold mt-5 mb-1 ${theme.text} hover:underline `}
+        >
+          Forget Password
         </Link>
       </div>
     </div>

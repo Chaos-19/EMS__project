@@ -110,9 +110,13 @@ export default function Signup() {
             {loading ? "Loading..." : "Sign Up"}
           </button>
         </form>
-        <div className='flex items-center justify-center gap-4 mt-3'>
+        <div className='flex flex-col items-center justify-center gap-4 mt-3'>
           <span className={`block text-sm font-small mb-1 ${theme.text}`}>Already have an account?</span>
-          <Link to="/login" className={`block text-sm font-small mb-1 ${theme.text} hover:underline hover:text-black`}>Log in</Link>
+          <Link to="/login" 
+          className={`${theme.primary} bg-blue-500 text-white font-semibold text-center w-full py-2 rounded-md hover:opacity-90 transition-opacity`}
+          >
+            Log in
+            </Link>
         </div>
       </div>
     </div>

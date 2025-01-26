@@ -21,7 +21,7 @@ const userschema = new mongoose.Schema({
     },
     profilepic: {
         type: String,
-        default: " ",
+        default: "https://cdn.vectorstock.com/i/1000v/23/81/default-avatar-profile-icon-vector-18942381.avif",
 
     },
     role: {

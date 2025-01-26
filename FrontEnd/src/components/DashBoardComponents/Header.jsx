@@ -4,11 +4,14 @@ import ThemeToggle from '../ThemeToggle';
 import NavLink from './NavLink';
 import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useSelector } from 'react-redux';
+import ProfileMenu from './ProfileMenu';
 
 export default function Header() {
   const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const {currentUser} = useSelector(state => state.user);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -54,12 +57,16 @@ export default function Header() {
             <NavLink to="/contact" label="Contact" />
             <NavLink to="/calendar" label="Calendar" />
             <ThemeToggle />
-            <Link
-              to="/signup"
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
-            >
-              Sign Up
-            </Link>
+            {currentUser ? (
+              <ProfileMenu />
+            ) : (
+              <Link
+                to="/signup"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
+              >
+                Sign Up
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -74,13 +81,17 @@ export default function Header() {
               <NavLink to="/calendar" label="Calendar" onClick={closeMenu} />
               <div className="flex items-center justify-between">
                 <ThemeToggle />
-                <Link
-                  to="/signup"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
-                  onClick={closeMenu}
-                >
-                  Sign Up
-                </Link>
+                { currentUser ? (
+                  <ProfileMenu />
+                ) : (
+                  <Link
+                    to="/signup"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-opacity"
+                    onClick={closeMenu}
+                  >
+                    Sign Up
+                  </Link>
+                )}
               </div>
             </div>
           </nav>
