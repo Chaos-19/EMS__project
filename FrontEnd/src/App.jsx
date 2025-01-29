@@ -16,6 +16,8 @@ import Footer from './components/DashBoardComponents/Footer';
 import ForgetPassword from './pages/AuthPages/ForgetPassword';
 import ResetPassword from './pages/AuthPages/ResetPassword';
 import UpdateProfile from './pages/userPages/updateProfile';
+import EventDetails from './pages/EventPages/eventDetails';
+import Events from './pages/EventPages/Events';
 
 function Layout({ children }) {
   return (
@@ -35,7 +37,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/events" element={<Home />} />
+            
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
@@ -46,6 +48,8 @@ function App() {
             <Route path="/forgetPassword" element={<ForgetPassword />} />
             <Route path="/resetPassword" element={<ResetPassword />} />
             <Route path="/updateProfile" element={<UpdateProfile />} />
+            <Route path="/events/:eventId" element={<EventDetails />} />
+            <Route path="/events" element = {<Events />} />
           </Routes>
         </Layout>
       </Router>

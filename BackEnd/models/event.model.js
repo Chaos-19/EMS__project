@@ -29,7 +29,7 @@ const eventSchema = new mongoose.Schema({
     eventType: {
         type: String,
         required: true,
-        enum: ["Private", "Public"],
+        enum: ["Private", "Public"],  // Specifies if the event is private or public
     },
     eventCategory: {
         type: String,
@@ -39,10 +39,10 @@ const eventSchema = new mongoose.Schema({
     eventStatus: {
         type: String,
         required: true,
-        enum: ["Active", "Pending", "Cancelled","Ended"],
-        default: "Pending",
+        enum: ["Active", "Pending", "Cancelled", "Ended"],
+        default: "Pending",  // Default status is Pending before approval
     },
-    host:{
+    host: {
         type: String,
         required: true,
     },
@@ -50,6 +50,14 @@ const eventSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+    },
+    bookingCode: {  // Only used for private events
+        type: String,
+        required: function () { return this.eventType === "Private"; },
+    },
+    locked: {  // Locking the event after approval
+        type: Boolean,
+        default: false,  // False by default, set to true once the event is approved
     },
 }, {timestamps: true});
 
