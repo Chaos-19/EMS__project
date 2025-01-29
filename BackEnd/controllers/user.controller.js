@@ -66,3 +66,28 @@ export const updateProfile = async (req, res, next) => {
         next(error); // Pass error to next middleware for centralized error handling
     }
 };
+
+export const deleteUser = async (req, res, next) => {
+    try {
+        const userIdFromParams = req.params.id;
+        const loggedInUserId = req.userId; // User ID from the middleware (VerifiedUser)
+
+        // Check if the logged-in user is trying to delete their own account
+        if (userIdFromParams !== loggedInUserId.toString()) {
+            return res.status(403).json({ error: 'You are not authorized to delete this account.' });
+        }
+
+        const user = await User.findByIdAndDelete(userIdFromParams);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Optionally log the deletion action for auditing purposes
+        console.log(`User with ID ${userIdFromParams} deleted.`);
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);  // Log the error for debugging purposes
+        next(error); // Pass error to next middleware for centralized error handling    
+    }    
+};

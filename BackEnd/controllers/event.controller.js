@@ -1,6 +1,6 @@
 import cron from "node-cron";
 
-
+import Ticket from "../models/ticket.model.js"; 
 import Event from "../models/event.model.js";
 import User from "../models/user.model.js";
 import RequestedEvent from "../models/requestedEvent.model.js";
@@ -61,6 +61,18 @@ export const createEvent = async (req, res, next) => {
     }
 };
 
+export const getAllEvents = async (req, res, next) => {
+    try {
+        const events = await Event.find();
+        if (!events) {
+            return res.status(404).json({error: 'No events found!'});
+        }
+        res.status(200).json(events);
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const getAllRequestedEvents = async (req, res, next) => {
     const userRole = req.userRole;
     if (userRole !== "Admin") {
@@ -72,7 +84,20 @@ export const getAllRequestedEvents = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
+export const getEventsByCategory = async (req, res, next) => {  
+    const category = req.params.category;
+    try {
+        const events = await Event.find({eventCategory: category});
+        if (!events) {
+            return res.status(404).json({error: 'No events found!'});
+        }
+        res.status(200).json(events);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const approveRequestedEvent = async (req, res, next) => {
     const userRole = req.userRole;
@@ -283,31 +308,60 @@ export const deleteEvent = async (req, res, next) => {
     }
 };
 
+
 export const ticketBooking = async (req, res, next) => {
-    const userRole = req.userRole; // User's role (admin or user)
-    const userId = req.userId; // User's ID (assumed to be passed as a parameter or from authentication)
-    const eventId = req.params.id; // Event ID to delete
+    const userRole = req.userRole;  // User's role (admin or user)
+    const userId = req.userId;      // User's ID (assumed to be passed as a parameter or from authentication)
+    const eventId = req.params.id;  // Event ID for booking
+    let { bookingCode, numberOfTickets } = req.body;  // Extract number of tickets, and possibly booking code
 
     try {
-        let event;
-
-        // both admin and user can delete events
+        // Admin cannot book tickets
         if (userRole === "Admin") {
-            event = await Event.findById(eventId);
-        } else {
-            event = await Event.findById(eventId) || await RequestedEvent.findById(eventId);
+            return res.status(403).json({ error: 'Admins cannot book tickets.' });
         }
 
-        // If not found in either schema, return 404
+        let event = await Event.findById(eventId);
+
+        // If event is not found, return 404
         if (!event) {
             return res.status(404).json({ error: 'Event not found or access denied' });
         }
 
-        // User can only delete their own event, regardless of whether it's approved or pending
-        }catch (error) {            
-            next(error);
+        // Check if event is private and conditionally extract booking code
+        if (event.eventType === "Private") {
+            // If private event, we need a booking code from req.body
+            if (!bookingCode) {
+                return res.status(400).json({ error: 'Booking code is required for private events.' });
+            }
+
+            // Check if booking code matches the event's code
+            if (event.bookingCode !== bookingCode) {
+                return res.status(403).json({ error: 'Incorrect booking code for private event.' });
+            }
+        } else {
+            // For public events, no need for booking code
+            bookingCode = undefined; // Clear out any bookingCode from the request body if it’s a public event
         }
-    };
+
+        // Create the ticket for the user
+        const newTicket = new Ticket({
+            eventId: event._id,
+            userId: userId,
+            ticketType: 'Regular',  // Default ticket type
+            numberOfTickets: numberOfTickets || 1,  // Default to 1 ticket if not specified
+        });
+
+        // Save the ticket
+        await newTicket.save();
+
+        res.status(200).json({ message: 'Ticket booked successfully', ticket: newTicket });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
 
