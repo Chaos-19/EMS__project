@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import { Parser } from "json2csv";
 
 import Ticket from "../models/ticket.model.js"; 
 import Event from "../models/event.model.js";
@@ -308,7 +309,6 @@ export const deleteEvent = async (req, res, next) => {
     }
 };
 
-
 export const ticketBooking = async (req, res, next) => {
     const userRole = req.userRole;  // User's role (admin or user)
     const userId = req.userId;      // User's ID (assumed to be passed as a parameter or from authentication)
@@ -363,5 +363,103 @@ export const ticketBooking = async (req, res, next) => {
 };
 
 
+export const getEventTickets = async (req, res, next) => {  // Get all tickets for an event
+    const eventId = req.params.id;  // Event ID to retrieve tickets for
 
+    try {
+        const event = await Event.findById(eventId);
+
+        // If event is not found, return 404
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found or access denied' });
+        }
+
+        const tickets = await Ticket.find({ eventId: event._id });  // Find tickets for the event
+
+        res.status(200).json({ tickets });
+
+    } catch (error) {
+        next(error);    
+    }
+};
+
+
+export const getEventStats = async (req, res, next) => { 
+    const eventId = req.params.id;  // Event ID to retrieve statistics for
+
+    try {
+        const event = await Event.findById(eventId);
+
+        // If event is not found, return 404
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found or access denied' });
+        }
+
+        // Fetch all tickets for the event
+        const tickets = await Ticket.find({ eventId: eventId });
+
+        // Calculate statistics
+        const totalTicketsSold = tickets.length;
+        const totalRevenue = tickets.reduce((sum, ticket) => sum + ticket.numberOfTickets * ticket.ticketPrice, 0);
+
+        // Calculate the number of tickets sold per ticket type (e.g., Regular, VIP)
+        const ticketTypes = {
+            Regular: tickets.filter((ticket) => ticket.ticketType === 'Regular').length,
+            VIP: tickets.filter((ticket) => ticket.ticketType === 'VIP').length
+        };
+
+        // Return the statistics
+        res.status(200).json({
+            event: {
+                title: event.title,
+                date: event.date,
+                location: event.location,
+            },
+            stats: {
+                totalTicketsSold,
+                totalRevenue,
+                ticketTypes,
+            }
+        });
+    } catch (error) {
+        console.error(error);  // Log the error for debugging purposes
+        next(error); // Pass error to next middleware for centralized error handling
+    }
+};
+
+export const exportEventData = async (req, res, next) => {
+  try {
+    const events = await Event.find(); // Fetch all events
+
+    // Create CSV data
+    const csvData = events.map((event) => ({
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      startTime: event.StartTime,
+      location: event.location,
+      image: event.image,
+      eventType: event.eventType,
+      eventCategory: event.eventCategory,
+      eventStatus: event.eventStatus,
+      host: event.host,
+      createdBy: event.createdBy,  // This can be populated with user info if needed
+      bookingCode: event.bookingCode,  // Only for private events
+      locked: event.locked,  // Event lock status
+    }));
+
+    // Convert to CSV using json2csv
+    const parser = new Parser();
+    const csv = parser.parse(csvData);
+
+    // Set headers and send the CSV as a response
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="events.csv"');
+    res.send(csv);
+  } catch (error) {
+    console.error(error);  // Log the error for debugging purposes
+    next(error); // Pass error to the next middleware
+  }
+};
+   
 

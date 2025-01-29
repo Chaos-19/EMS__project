@@ -1,4 +1,6 @@
 import User from '../models/user.model.js';
+import Ticket from '../models/ticket.model.js';
+import Event from '../models/event.model.js';
 import bcrypt from 'bcryptjs';
 
 // Email validation function
@@ -90,4 +92,72 @@ export const deleteUser = async (req, res, next) => {
         console.error(error);  // Log the error for debugging purposes
         next(error); // Pass error to next middleware for centralized error handling    
     }    
+};
+
+export const getTickets = async (req, res, next) => {
+    try {
+        const userId = req.userId; // User ID from the middleware (VerifiedUser)
+       
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // Find tickets that belong to the user
+        const tickets = await Ticket.find({ user: userId });
+
+        if (!tickets || tickets.length === 0) {
+            return res.status(404).json({ error: 'No tickets found for this user' });
+        }
+
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error(error);  // Log the error for debugging purposes
+        next(error); // Pass error to next middleware for centralized error handling    
+    }    
+};
+
+
+export const getTicketDetails = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    const userId = req.userId; // User ID from middleware (VerifiedUser)
+
+    // Find the ticket by its ID
+    const ticket = await Ticket.findById(ticketId).populate('eventId', 'title date location privacy').populate('userId', 'fullName email');
+    
+    // Check if the ticket exists
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    // Check if the ticket belongs to the logged-in user
+    if (ticket.userId._id.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'You are not authorized to view this ticket' });
+    }
+
+    // Prepare the response object
+    const ticketDetails = {
+      ticketId: ticket._id,
+      Event: {
+        title: ticket.eventId.title,
+        date: ticket.eventId.date,
+        location: ticket.eventId.location,
+        privacy: ticket.eventId.privacy,  // You may want to display privacy as well
+      },
+      User: {
+        fullName: ticket.userId.fullName,
+        email: ticket.userId.email,
+      },
+      ticketType: ticket.ticketType,
+      status: ticket.status,
+      numberOfTickets: ticket.numberOfTickets,
+      bookingCode: ticket.bookingCode, // Will only be available if the event is private
+      bookingDate: ticket.bookingDate,
+    };
+
+    res.status(200).json(ticketDetails);
+  } catch (error) {
+    console.error(error);  // Log the error for debugging purposes
+    next(error); // Pass error to next middleware for centralized error handling    
+  }
 };
