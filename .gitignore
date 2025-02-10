@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 FrontEnd/node_modules
+FrontEnd/.env
 node_modules
 .env
 dist

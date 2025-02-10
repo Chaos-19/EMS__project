@@ -19,6 +19,8 @@ import UpdateProfile from './pages/userPages/updateProfile';
 import EventDetails from './pages/EventPages/eventDetails';
 import Events from './pages/EventPages/Events';
 import CreateEvent from './pages/EventPages/createEvent';
+import RequestedEvent from './pages/eventAdmin Page/requestedEvent';
+import MyEvents from './pages/userPages/myEvents';
 
 function Layout({ children }) {
   return (
@@ -47,11 +49,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/verifyEmail" element={<EmailVerification/>} />
             <Route path="/forgetPassword" element={<ForgetPassword />} />
-            <Route path="/resetPassword" element={<ResetPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/updateProfile" element={<UpdateProfile />} />
             <Route path="/events/:eventId" element={<EventDetails />} />
             <Route path="/events" element = {<Events />} />
             <Route path='/createEvent' element={<CreateEvent />} />
+            <Route path="/requested-event" element={<RequestedEvent />} />
+            <Route path='/my-events' element={<MyEvents />} />
           </Routes>
         </Layout>
       </Router>

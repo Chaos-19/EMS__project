@@ -1,24 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useTheme } from "../../contexts/ThemeContext";
+import useResetPassword from '../../hooks/authHooks/useResetPassword';
 
 const ResetPassword = () => {
   const { theme } = useTheme();
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (password === confirmPassword) {
-      toast.success('Password reset successful!');
-      navigate('/');
-    } else {
-      toast.error('Passwords do not match. Please try again.');
-    }
-  };
+  const { token } = useParams(); // Get the reset token from the URL
+  const { formData, loading, handleChange, handleSubmit } = useResetPassword(token);
 
   return (
     <div className="min-h-screen flex items-center justify-center relative">
@@ -43,9 +34,10 @@ const ResetPassword = () => {
             <input
               type="password"
               id="password"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-700 "
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-700"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
@@ -54,9 +46,10 @@ const ResetPassword = () => {
             <input
               type="password"
               id="confirmPassword"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-700 "
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              name="confirmPassword"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-700"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               required
             />
           </div>
@@ -65,8 +58,9 @@ const ResetPassword = () => {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            disabled={loading}
           >
-            Reset Password
+            {loading ? 'Resetting...' : 'Reset Password'}
           </motion.button>
         </form>
         <Toaster />

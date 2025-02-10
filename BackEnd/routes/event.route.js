@@ -26,7 +26,7 @@ router.post("/create", VerifiedUser, createEvent);
 router.get("/category/:category", getEventsByCategory);
 router.get("/requested-event", VerifiedUser, getAllRequestedEvents);
 router.post("/approve-event/:id", VerifiedUser, approveRequestedEvent);
-router.get("/my-events", VerifiedUser, getMyEvent);
+router.get("/my-events/:id", VerifiedUser, getMyEvent);
 router.get("/my-event/id", VerifiedUser, getMyEventDetails);
 router.put("/update-event/:id", VerifiedUser, updateEvent);
 router.post("/tickets/:id", VerifiedUser, ticketBooking);

@@ -82,10 +82,15 @@ export const getAllEvents = async (req, res, next) => {
 export const getAllRequestedEvents = async (req, res, next) => {
     const userRole = req.userRole;
     if (userRole !== "Admin") {
-        return res.status(403).json({error: 'Access Denied. Only Admins can view all requested events!'});
+        return res.status(403).json({ error: 'Access Denied. Only Admins can view all requested events!' });
     }
     try {
         const requestedEvents = await RequestedEvent.find();
+
+        if (!requestedEvents.length) {
+            return res.status(200).json([]); // Return empty array instead of null
+        }
+
         res.status(200).json(requestedEvents);
     } catch (error) {
         next(error);
@@ -165,7 +170,7 @@ export const approveRequestedEvent = async (req, res, next) => {
 
 export const getMyEvent = async (req, res, next) => {
     const userRole = req.userRole;
-    const userId = req.userId; // Assuming userId is set by middleware
+    const userId = req.params.id; // Assuming userId is set by middleware
 
     // Validate userId
     if (!userId) {
