@@ -18,6 +18,7 @@ import ResetPassword from './pages/AuthPages/ResetPassword';
 import UpdateProfile from './pages/userPages/updateProfile';
 import EventDetails from './pages/EventPages/eventDetails';
 import Events from './pages/EventPages/Events';
+import CreateEvent from './pages/EventPages/createEvent';
 
 function Layout({ children }) {
   return (
@@ -50,6 +51,7 @@ function App() {
             <Route path="/updateProfile" element={<UpdateProfile />} />
             <Route path="/events/:eventId" element={<EventDetails />} />
             <Route path="/events" element = {<Events />} />
+            <Route path='/createEvent' element={<CreateEvent />} />
           </Routes>
         </Layout>
       </Router>

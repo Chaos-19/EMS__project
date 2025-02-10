@@ -11,11 +11,11 @@ export const createEvent = async (req, res, next) => {
         const userId = req.userId;
         const userRole = req.userRole;
         
-        try {
-
+        
         if(!title || !description || !date || !StartTime || !location || !image || !eventType || !eventCategory || !host){
             return res.status(400).json({error: 'All fields are required!'});
         }
+        try {
 
         const existingEvent = await Event.findOne({title});
         const existingRequestedEvent = await RequestedEvent.findOne({title});
@@ -37,6 +37,7 @@ export const createEvent = async (req, res, next) => {
                 host,
                 createdBy: userId,
             });
+            
             await event.save();
             res.status(201).json(event);
         }

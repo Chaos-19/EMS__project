@@ -45,6 +45,14 @@ const requestedEventSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    bookingCode: {  // Only used for private events
+        type: String,
+        required: function () { return this.eventType === "Private"; },
+    }, 
+    locked: {  // Locking the event after approval
+        type: Boolean,
+        default: false,  // False by default, set to true once the event is approved
+    },
     requester: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
