@@ -17,6 +17,7 @@ const useUpdateProfile = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   // Set initial form data when currentUser changes
   useEffect(() => {
@@ -42,11 +43,12 @@ const useUpdateProfile = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({
           ...prev,
-          profilepic: reader.result, // Save base64 string
+          profilepic: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -64,20 +66,18 @@ const useUpdateProfile = () => {
     dispatch(updateProfileStart());
 
     try {
-      const updatedData = {
-        fullName: formData.fullName,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        profilepic: formData.profilepic,
-      };
+      const updatedData = new FormData();
+      updatedData.append('fullName', formData.fullName);
+      updatedData.append('username', formData.username);
+      updatedData.append('email', formData.email);
+      updatedData.append('password', formData.password);
+      if (selectedFile) {
+        updatedData.append('profilepic', selectedFile);
+      }
 
       const res = await fetch(`/api/user/updateProfile/${currentUser._id}`, {
         method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
+        body: updatedData,
       });
 
       const data = await res.json();
