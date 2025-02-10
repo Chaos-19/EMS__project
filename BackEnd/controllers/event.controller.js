@@ -365,6 +365,11 @@ export const ticketBooking = async (req, res, next) => {
 
 export const getEventTickets = async (req, res, next) => {  // Get all tickets for an event
     const eventId = req.params.id;  // Event ID to retrieve tickets for
+    const userRole = req.userRole;  // only Admins can view event tickets
+
+    if (userRole !== "superAdmin" || userRole !== "Admin") {
+        return res.status(403).json({ error: 'Access Denied. Only Admins can view event tickets!' });
+    }
 
     try {
         const event = await Event.findById(eventId);
@@ -386,6 +391,11 @@ export const getEventTickets = async (req, res, next) => {  // Get all tickets f
 
 export const getEventStats = async (req, res, next) => { 
     const eventId = req.params.id;  // Event ID to retrieve statistics for
+    const userRole = req.userRole;  // User's role (admin or user)
+
+    if (userRole !== "superAdmin" || userRole !== "Admin") {
+        return res.status(403).json({ error: 'Access Denied. Only Admins can view event statistics!' });
+    }
 
     try {
         const event = await Event.findById(eventId);
@@ -428,6 +438,11 @@ export const getEventStats = async (req, res, next) => {
 };
 
 export const exportEventData = async (req, res, next) => {
+    const userRole = req.userRole;  // User's role (admin or user)
+
+    if (userRole !== "superAdmin" || userRole !== "Admin") {
+        return res.status(403).json({ error: 'Access Denied. Only Admins can export event data!' });
+    }
   try {
     const events = await Event.find(); // Fetch all events
 
