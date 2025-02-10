@@ -1,22 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from "../../contexts/ThemeContext";
+import useForgetPassword from '../../hooks/authHooks/useForgetPassword';
 
 function ForgetPassword() {
-
-  const { theme } = useTheme();  
+  const { theme } = useTheme();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Here you would typically make an API call to send the reset link
-    // For demonstration, we'll just set a success message
-    navigate('/ResetPassword');
-    setMessage('If an account with that email exists, a password reset link has been sent.');
-  };
+  const { email, loading, handleChange, handleSubmit } = useForgetPassword();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 relative">
@@ -41,9 +32,9 @@ function ForgetPassword() {
             <input
               type="email"
               id="email"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-600 ${theme.text} `}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:bg-gray-600 ${theme.text}`}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleChange}
               required
             />
           </div>
@@ -52,11 +43,11 @@ function ForgetPassword() {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            disabled={loading}
           >
-            Send Reset Link
+            {loading ? 'Sending...' : 'Send Reset Link'}
           </motion.button>
         </form>
-        {message && <p className="mt-4 text-green-500 text-center">{message}</p>}
       </motion.div>
     </div>
   );

@@ -31,12 +31,12 @@ const ProfileMenu = () => {
         className="flex items-center space-x-2 focus:outline-none"
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
-        {currentUser?.profilePicture ? (
+        {currentUser ? (
           <img src={currentUser.profilePicture} alt="Profile" className="h-8 w-8 rounded-full" />
         ) : (
           <UserCircleIcon className={`h-8 w-8 ${theme.text}`} />
         )}
-        <span className="font-semibold">{currentUser?.name}</span>
+        <span className="font-semibold">{currentUser?.fullName}</span>
       </button>
       {dropdownOpen && (
         <div ref={dropdownRef} className={`absolute right-0 mt-2 w-48 ${theme.background} border border-gray-200 rounded-md shadow-lg`}>

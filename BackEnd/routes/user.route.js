@@ -1,6 +1,6 @@
 import express from 'express';
 import VerifiedUser from '../middleware/VerifiedUser.Middleware.js';
-import { deleteUser, getTicketDetails, getTickets, updateProfile } from '../controllers/user.controller.js';
+import { deleteUser, getTicketDetails, getTickets, updateProfile,  } from '../controllers/user.controller.js';
 
 const router = express.Router();
 

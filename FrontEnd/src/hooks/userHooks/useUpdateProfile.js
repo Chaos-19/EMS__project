@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfileStart, updateProfileSuccess, updateProfileFailure } from '../../redux/userStore/userSlice';
 import toast from 'react-hot-toast';
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const useUpdateProfile = () => {
   const dispatch = useDispatch();
@@ -38,6 +37,20 @@ const useUpdateProfile = () => {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          profilepic: reader.result, // Save base64 string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -101,6 +114,7 @@ const useUpdateProfile = () => {
     handleSubmit,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
+    handleImageChange, // Add this to handle image change
   };
 };
 

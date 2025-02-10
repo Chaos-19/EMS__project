@@ -7,7 +7,7 @@ import useUpdateProfile from '../../hooks/userHooks/useUpdateProfile';
 
 const UpdateProfile = () => {
   const { theme } = useTheme();
-  const { currentUser } = useSelector((state) => state.user); // Accessing currentUser from Redux
+  const currentUser = useSelector((state) => state.user.currentUser); // Accessing currentUser from Redux
   const navigate = useNavigate();
   
   const {
@@ -18,6 +18,7 @@ const UpdateProfile = () => {
     handleSubmit,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
+    handleImageChange, // Add this to handle image change
   } = useUpdateProfile(); // Using the updated hook
 
   if (!currentUser) {
@@ -32,17 +33,25 @@ const UpdateProfile = () => {
         <h2 className={`text-3xl font-bold text-center mb-6 ${theme.text}`}>Update Profile</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4 text-center relative">
-            {formData.profilepic ? (
-              <img
-                src={formData.profilepic}
-                alt="Profile"
-                className="h-24 w-24 rounded-full mx-auto cursor-pointer"
+            <label className="cursor-pointer">
+              {formData.profilepic ? (
+                <img
+                  src={formData.profilepic}
+                  alt="Profile"
+                  className="h-24 w-24 rounded-full mx-auto"
+                />
+              ) : (
+                <UserCircleIcon
+                  className="h-24 w-24 mx-auto text-gray-500"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
               />
-            ) : (
-              <UserCircleIcon
-                className="h-24 w-24 mx-auto text-gray-500 cursor-pointer"
-              />
-            )}
+            </label>
           </div>
 
           <div className="mb-4">
