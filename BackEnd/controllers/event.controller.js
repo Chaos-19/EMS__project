@@ -68,6 +68,10 @@ export const getAllEvents = async (req, res, next) => {
         if (!events) {
             return res.status(404).json({error: 'No events found!'});
         }
+        // not show cancelled or ended events
+        if(events.eventStatus === "Cancelled" || events.eventStatus === "Ended"){
+            return res.status(404).json({error: 'No events found!'});
+        }
         res.status(200).json(events);
     } catch (error) {
         next(error);
@@ -187,7 +191,7 @@ export const getMyEvent = async (req, res, next) => {
     }
 };
 
-export const getEventDetails = async (req, res, next) => {
+export const getMyEventDetails = async (req, res, next) => {
     const userRole = req.userRole;  
     const userId = req.userId;  
     const eventId = req.params.id;  
@@ -207,6 +211,24 @@ export const getEventDetails = async (req, res, next) => {
         // If no event found, return a 404 error
         if (!event) {
             return res.status(404).json({ error: 'Event not found or access denied' });
+        }
+
+        res.status(200).json(event);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getEventDetails = async (req, res, next) => {
+    const eventId = req.params.id;  
+    
+    try {
+        // Fetch the event from either the Event or RequestedEvent schema
+        let event = await Event.findById(eventId) || await RequestedEvent.findById(eventId);
+
+        // If no event found, return a 404 error
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
         }
 
         res.status(200).json(event);

@@ -11,6 +11,7 @@ import { approveRequestedEvent,
     getEventStats, 
     getEventTickets, 
     getMyEvent, 
+    getMyEventDetails, 
     ticketBooking, 
     updateEvent } 
     from "../controllers/event.controller.js";
@@ -20,12 +21,13 @@ import { approveRequestedEvent,
 const router = express.Router();
 
 router.get("/", getAllEvents);
+router.get("/:id", getEventDetails);
 router.post("/create", VerifiedUser, createEvent);
 router.get("/category/:category", getEventsByCategory);
 router.get("/requested-event", VerifiedUser, getAllRequestedEvents);
 router.post("/approve-event/:id", VerifiedUser, approveRequestedEvent);
 router.get("/my-events", VerifiedUser, getMyEvent);
-router.get("/my-event/id", VerifiedUser, getEventDetails);
+router.get("/my-event/id", VerifiedUser, getMyEventDetails);
 router.put("/update-event/:id", VerifiedUser, updateEvent);
 router.post("/tickets/:id", VerifiedUser, ticketBooking);
 router.delete("/delete-event/:id", VerifiedUser, deleteEvent);

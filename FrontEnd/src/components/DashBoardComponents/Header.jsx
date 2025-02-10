@@ -51,7 +51,7 @@ export default function Header() {
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-6 font-semibold">
-            <NavLink to="/" label="Home" />
+            <NavLink to="/events" label="Home" />
             <NavLink to="/services" label="Services" />
             <NavLink to="/about" label="About Us" />
             <NavLink to="/contact" label="Contact" />
@@ -74,7 +74,7 @@ export default function Header() {
         {isMenuOpen && (
           <nav className="md:hidden mt-4 pb-4">
             <div className="flex flex-col space-y-4">
-              <NavLink to="/" label="Home" onClick={closeMenu} />
+              <NavLink to="/events" label="Home" onClick={closeMenu} />
               <NavLink to="/services" label="Services" onClick={closeMenu} />
               <NavLink to="/about" label="About Us" onClick={closeMenu} />
               <NavLink to="/contact" label="Contact" onClick={closeMenu} />
