@@ -4,14 +4,12 @@ import toast from 'react-hot-toast';
 import { useTheme } from '../../contexts/ThemeContext';
 import { UserCircleIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import useUpdateProfile from '../../hooks/userHooks/useUpdateProfile';
-import { useRef } from 'react';
 
 const UpdateProfile = () => {
   const { theme } = useTheme();
-  const currentUser = useSelector((state) => state.user.currentUser);
-  const fileRef = useRef(null);
+  const currentUser = useSelector((state) => state.user.currentUser); // Accessing currentUser from Redux
   const navigate = useNavigate();
-
+  
   const {
     formData,
     passwordVisible,
@@ -20,8 +18,14 @@ const UpdateProfile = () => {
     handleSubmit,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
-    handleImageChange,
-  } = useUpdateProfile(currentUser);
+    handleImageChange, // Add this to handle image change
+  } = useUpdateProfile(); // Using the updated hook
+
+  if (!currentUser) {
+    toast.error('User not found. Please log in again.');
+    navigate('/login'); // Redirect to login page if no user
+    return null;
+  }
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${theme.background} pt-20`}>
@@ -43,7 +47,6 @@ const UpdateProfile = () => {
               )}
               <input
                 type="file"
-                ref={fileRef}
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"

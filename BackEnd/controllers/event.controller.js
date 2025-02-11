@@ -6,15 +6,19 @@ import Event from "../models/event.model.js";
 import User from "../models/user.model.js";
 import RequestedEvent from "../models/requestedEvent.model.js";
 
+
 export const createEvent = async (req, res, next) => {
-        const {title, description, date, StartTime, location, image, eventType, eventCategory, host} = req.body;
-        const userId = req.userId;
+         const userId = req.userId;
         const userRole = req.userRole;
+        const {title, description, date, StartTime, location,image,  eventType, eventCategory, host} = req.body;
+
         
         
-        if(!title || !description || !date || !StartTime || !location || !image || !eventType || !eventCategory || !host){
+        if(!title || !description || !date || !StartTime || !location || !eventType || !eventCategory || !host){
             return res.status(400).json({error: 'All fields are required!'});
         }
+        console.log(userId, userRole);
+        console.log(title, description, date, StartTime, location, image, eventType, eventCategory, host);
         try {
 
         const existingEvent = await Event.findOne({title});
@@ -58,10 +62,12 @@ export const createEvent = async (req, res, next) => {
             await requestedEvent.save();
             res.status(201).json(requestedEvent);
         }
+    
     } catch (error) {
         next(error);
     }
 };
+
 
 export const getAllEvents = async (req, res, next) => {
     try {
@@ -81,13 +87,15 @@ export const getAllEvents = async (req, res, next) => {
 
 export const getAllRequestedEvents = async (req, res, next) => {
     const userRole = req.userRole;
+
     if (userRole !== "Admin") {
         return res.status(403).json({ error: 'Access Denied. Only Admins can view all requested events!' });
     }
     try {
         const requestedEvents = await RequestedEvent.find();
+        console.log(requestedEvents);
 
-        if (!requestedEvents.length) {
+        if (!requestedEvents) {
             return res.status(200).json([]); // Return empty array instead of null
         }
 
@@ -173,8 +181,12 @@ export const getMyEvent = async (req, res, next) => {
     const userId = req.params.id; // Assuming userId is set by middleware
 
     // Validate userId
+    
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
+    }
+    if(userId !== req.userId){
+        return res.status(403).json({ error: 'Access Denied. You can only view your own events!' });
     }
 
     try {
@@ -183,7 +195,7 @@ export const getMyEvent = async (req, res, next) => {
             events = await Event.find();
         } else {
             const approvedEvents = await Event.find({ createdBy: userId });
-            const pendingEvents = await RequestEvent.find({ createdBy: userId });
+            const pendingEvents = await RequestedEvent.find({ createdBy: userId });
             events = [...approvedEvents, ...pendingEvents];
         }
 

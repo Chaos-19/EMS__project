@@ -17,8 +17,7 @@ const CreateEvent = () => {
     eventType: 'Public',
     eventCategory: 'Concert',
     host: '',
-    eventPassword: '',
-    customEventCategory: '',
+   
   });
   const [selectedImages, setSelectedImages] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
@@ -51,11 +50,9 @@ const CreateEvent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const eventData = { ...formData, images: selectedImages };
-    if (formData.eventCategory === 'Others') {
-      eventData.eventCategory = formData.customEventCategory;
-    }
-    createEvent(eventData);
+    
+    console.log(formData);
+    createEvent(formData);
   };
 
   return (
@@ -209,7 +206,7 @@ const CreateEvent = () => {
                 <option value="Conference">Conference</option>
                 <option value="Others">Others</option>
               </select>
-              {formData.eventCategory === 'Others' && (
+              {/* {formData.eventCategory === 'Others' && (
                 <input
                   type="text"
                   name="customEventCategory"
@@ -219,7 +216,7 @@ const CreateEvent = () => {
                   placeholder="Enter custom event category"
                   required
                 />
-              )}
+              )} */}
             </div>
             <div>
               <label className={`block text-lg font-semibold mb-2 ${theme.text}`}>Host</label>

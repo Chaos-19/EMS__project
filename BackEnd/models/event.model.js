@@ -12,11 +12,11 @@ const eventSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true,
+      
     },
     StartTime: {
         type: String,
-        required: true,
+        
     },
     location: {
         type: String,
@@ -24,7 +24,6 @@ const eventSchema = new mongoose.Schema({
     },
     image: {
         type: [String],
-        required: true,
     },
     eventType: {
         type: String,
@@ -38,7 +37,6 @@ const eventSchema = new mongoose.Schema({
     },
     eventStatus: {
         type: String,
-        required: true,
         enum: ["Active", "Pending", "Cancelled", "Ended"],
         default: "Pending",  // Default status is Pending before approval
     },
@@ -49,7 +47,7 @@ const eventSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        // required: true,
     },
     bookingCode: {  // Only used for private events
         type: String,

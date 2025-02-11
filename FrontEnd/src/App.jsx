@@ -52,9 +52,9 @@ function App() {
             <Route path="/forgetPassword" element={<ForgetPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/events" element = {<Events />} />
+            <Route path="/events/:eventId" element={<EventDetails />} />
             <Route element={<PrivateRoute />} >
             <Route path="/updateProfile" element={<UpdateProfile />} />
-            <Route path="/events/:eventId" element={<EventDetails />} />
             <Route path='/createEvent' element={<CreateEvent />} />
             <Route path="/requested-event" element={<RequestedEvent />} />
             <Route path='/my-events' element={<MyEvents />} />

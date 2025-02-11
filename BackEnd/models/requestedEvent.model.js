@@ -22,8 +22,8 @@ const requestedEventSchema = new mongoose.Schema({
         required: true,
     },
     image: {
-        type: String,
-        required: true,
+        type: [String],
+        
     },
     eventType: {
         type: String,

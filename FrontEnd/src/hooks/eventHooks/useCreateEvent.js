@@ -1,31 +1,50 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const useCreateEvent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const createEvent = async (eventData) => {
+  // const handleInputValidation = ({ title, description, date, StartTime, location, image, eventType, eventCategory, host }) => {
+  //   if (!title || !description || !date || !StartTime || !location || !eventType || !eventCategory || !host || !image) {
+  //     toast.error('All fields are required');
+  //     return false;
+  //   }
+  //   return true;
+  // };
+  const handleImageConverter = (image) => {
+    if (image) {
+      return URL.createObjectURL(image);
+    }
+  };
+
+  const createEvent = async ({ title, description, date, StartTime, location, image, eventType, eventCategory, host }) => {
+    // const success = handleInputValidation({ title, description, date, StartTime, location, image, eventType, eventCategory, host });
+    const ImageUri = handleImageConverter(image);
+    // if (!success) return;
+
     setLoading(true);
     setError(null);
 
     try {
+    
+
       const response = await fetch('/api/event/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'content-type': 'application/json',
         },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify({ title, description, date, StartTime, location, image: ImageUri, eventType, eventCategory, host }), // No need to manually set Content-Type; browser does it
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create event');
+        throw new Error(data.error || 'Failed to create event');
       }
 
-      const data = await response.json();
       toast.success('Event created successfully!');
       navigate(`/events/${data._id}`);
     } catch (error) {
