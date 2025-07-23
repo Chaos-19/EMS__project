@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const useGetMyEvents = () => {
   const [events, setEvents] = useState([]);
@@ -13,10 +13,10 @@ const useGetMyEvents = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token"); // Ensure authentication
-        const res = await fetch(`/api/event/my-events/|${currentUser._id}`, {
-          method: 'GET',
+        const res = await fetch(`/api/event/my-events/${currentUser?._id}`, {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 

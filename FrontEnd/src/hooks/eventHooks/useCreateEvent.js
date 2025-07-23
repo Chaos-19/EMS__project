@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const useCreateEvent = () => {
   const [loading, setLoading] = useState(false);
@@ -20,32 +20,32 @@ const useCreateEvent = () => {
     }
   };
 
-  const createEvent = async ({ title, description, date, StartTime, location, image, eventType, eventCategory, host }) => {
+  const createEvent = async (form, image) => {
     // const success = handleInputValidation({ title, description, date, StartTime, location, image, eventType, eventCategory, host });
     const ImageUri = handleImageConverter(image);
     // if (!success) return;
+
+    console.log("Creating event with form data:", form);
 
     setLoading(true);
     setError(null);
 
     try {
-    
-
-      const response = await fetch('/api/event/create', {
-        method: 'POST',
+      const response = await fetch("/api/event/create", {
+        method: "POST",
         headers: {
-          'content-type': 'application/json',
+          "content-type": "application/json",
         },
-        body: JSON.stringify({ title, description, date, StartTime, location, image: ImageUri, eventType, eventCategory, host }), // No need to manually set Content-Type; browser does it
+        body: form, //JSON.stringify({ title, description, date, StartTime, location, image: ImageUri, eventType, eventCategory, host }), // No need to manually set Content-Type; browser does it
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create event');
+        throw new Error(data.error || "Failed to create event");
       }
 
-      toast.success('Event created successfully!');
+      toast.success("Event created successfully!");
       navigate(`/events/${data._id}`);
     } catch (error) {
       setError(error.message);
