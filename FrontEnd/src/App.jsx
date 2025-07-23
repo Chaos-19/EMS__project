@@ -22,7 +22,7 @@ import CreateEvent from './pages/EventPages/createEvent';
 import RequestedEvent from './pages/eventAdmin Page/requestedEvent';
 import MyEvents from './pages/userPages/myEvents';
 import PrivateRoute from './components/privateRoute/privateRoute';
-
+import BookingPage from './pages/EventPages/bookingPage';
 function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -58,6 +58,7 @@ function App() {
             <Route path='/createEvent' element={<CreateEvent />} />
             <Route path="/requested_events" element={<RequestedEvent />} />
             <Route path='/my-events' element={<MyEvents />} />
+            <Route path="/booking/:eventId" element={<BookingPage />} />
             </Route>
           </Routes>
         </Layout>

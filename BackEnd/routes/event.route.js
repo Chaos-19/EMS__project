@@ -29,7 +29,7 @@ router.post("/approve-event/:id", VerifiedUser, approveRequestedEvent);
 router.get("/my-events/:id", VerifiedUser, getMyEvent);
 router.get("/my-event/id", VerifiedUser, getMyEventDetails);
 router.put("/update-event/:id", VerifiedUser, updateEvent);
-router.post("/tickets/:id", VerifiedUser, ticketBooking);
+router.post("/booking/:id", VerifiedUser, ticketBooking);
 router.delete("/delete-event/:id", VerifiedUser, deleteEvent);
 /*----------------- for status reporting ----------------- */
 router.get("/events/:id/tickets", VerifiedUser, getEventTickets); // Get all tickets for an event

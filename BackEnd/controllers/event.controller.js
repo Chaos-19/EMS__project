@@ -6,6 +6,8 @@ import Event from "../models/event.model.js";
 import User from "../models/user.model.js";
 import RequestedEvent from "../models/requestedEvent.model.js";
 
+// controllers/eventController.js
+
 export const createEvent = async (req, res, next) => {
   const userId = req.userId;
   const userRole = req.userRole;
@@ -19,13 +21,17 @@ export const createEvent = async (req, res, next) => {
     eventType,
     eventCategory,
     host,
-    eventPassword,
+    bookingCode,  // Changed from eventPassword to bookingCode for clarity
   } = req.body;
 
   const imageFilenames = req.files?.map(file => file.filename);
 
-  if (!title || !description || !date || !StartTime || !location || !eventType || !eventCategory || !host ) {
+  if (!title || !description || !date || !StartTime || !location || !eventType || !eventCategory || !host) {
     return res.status(400).json({ error: "All fields are required!" });
+  }
+
+  if (eventType === "Private" && !bookingCode) {
+    return res.status(400).json({ error: "Booking code is required for private events." });
   }
 
   try {
@@ -46,11 +52,8 @@ export const createEvent = async (req, res, next) => {
       eventType,
       eventCategory,
       host,
+      bookingCode: eventType === "Private" ? bookingCode : undefined,
     };
-
-    if (eventType === "Private") {
-      commonData.eventPassword = eventPassword;
-    }
 
     let eventDoc;
     if (userRole === "Admin") {
@@ -65,6 +68,7 @@ export const createEvent = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 export const getAllEvents = async (req, res, next) => {
@@ -375,60 +379,44 @@ export const deleteEvent = async (req, res, next) => {
 };
 
 export const ticketBooking = async (req, res, next) => {
-  const userRole = req.userRole; // User's role (admin or user)
-  const userId = req.userId; // User's ID (assumed to be passed as a parameter or from authentication)
-  const eventId = req.params.id; // Event ID for booking
-  let { bookingCode, numberOfTickets } = req.body; // Extract number of tickets, and possibly booking code
+  const userRole = req.userRole;
+  const userId = req.userId;
+  const eventId = req.params.id;
+  let { bookingCode, numberOfTickets } = req.body;
 
   try {
-    // Admin cannot book tickets
     if (userRole === "Admin") {
       return res.status(403).json({ error: "Admins cannot book tickets." });
     }
 
-    let event = await Event.findById(eventId);
+    // Only find event in approved events collection
+    const event = await Event.findById(eventId);
 
-    // If event is not found, return 404
     if (!event) {
-      return res
-        .status(404)
-        .json({ error: "Event not found or access denied" });
+      return res.status(404).json({ error: "Event not found or not approved yet." });
     }
 
-    // Check if event is private and conditionally extract booking code
     if (event.eventType === "Private") {
-      // If private event, we need a booking code from req.body
       if (!bookingCode) {
-        return res
-          .status(400)
-          .json({ error: "Booking code is required for private events." });
+        return res.status(400).json({ error: "Booking code is required for private events." });
       }
-
-      // Check if booking code matches the event's code
       if (event.bookingCode !== bookingCode) {
-        return res
-          .status(403)
-          .json({ error: "Incorrect booking code for private event." });
+        return res.status(403).json({ error: "Incorrect booking code for private event." });
       }
     } else {
-      // For public events, no need for booking code
-      bookingCode = undefined; // Clear out any bookingCode from the request body if it’s a public event
+      bookingCode = undefined;
     }
 
-    // Create the ticket for the user
     const newTicket = new Ticket({
       eventId: event._id,
-      userId: userId,
-      ticketType: "Regular", // Default ticket type
-      numberOfTickets: numberOfTickets || 1, // Default to 1 ticket if not specified
+      userId,
+      ticketType: "Regular",
+      numberOfTickets: numberOfTickets || 1,
     });
 
-    // Save the ticket
     await newTicket.save();
 
-    res
-      .status(200)
-      .json({ message: "Ticket booked successfully", ticket: newTicket });
+    res.status(200).json({ message: "Ticket booked successfully", ticket: newTicket });
   } catch (error) {
     next(error);
   }
