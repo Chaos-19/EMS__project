@@ -51,7 +51,10 @@ const CreateEvent = () => {
   const handleSubmit =async (e) => {
   e.preventDefault();
 
-
+/*   if (selectedImages.length <= 3 || selectedImages.length > 7) {
+    alert('You must upload at least 3 and at most 7 images.');
+    return;
+  } */
 
     console.log('Form Data:');
 
