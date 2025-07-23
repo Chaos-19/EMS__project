@@ -48,12 +48,40 @@ const CreateEvent = () => {
     toast.success('Images uploaded successfully!');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    console.log(formData);
-    createEvent(formData);
-  };
+  const handleSubmit =async (e) => {
+  e.preventDefault();
+
+/*   if (selectedImages.length <= 3 || selectedImages.length > 7) {
+    alert('You must upload at least 3 and at most 7 images.');
+    return;
+  } */
+
+    console.log('Form Data:');
+
+  const form = new FormData();
+  form.append('title', formData.title);
+  form.append('description', formData.description);
+  form.append('date', formData.date);
+  form.append('StartTime', formData.StartTime);
+  form.append('location', formData.location);
+  form.append('eventType', formData.eventType);
+  form.append('eventCategory', formData.eventCategory);
+  form.append('host', formData.host);
+  if (formData.eventType === 'Private') {
+    form.append('eventPassword', formData.eventPassword);
+  }
+
+  selectedImages.forEach((image, index) => {
+    form.append('images', image); // Multer expects 'images' as array field
+  });
+
+ const response = await fetch("/api/event/create", {
+        method: "POST",
+        
+        body: form, //JSON.stringify({ title, description, date, StartTime, location, image: ImageUri, eventType, eventCategory, host }), // No need to manually set Content-Type; browser does it
+      });
+};
+
 
   return (
     <div className={`min-h-screen flex items-center justify-center ${theme.background} pt-20 px-4`}>
