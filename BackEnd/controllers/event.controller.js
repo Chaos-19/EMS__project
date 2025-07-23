@@ -86,24 +86,23 @@ export const getAllEvents = async (req, res, next) => {
 };
 
 export const getAllRequestedEvents = async (req, res, next) => {
-    const userRole = req.userRole;
-
-    if (userRole !== "Admin") {
-        return res.status(403).json({ error: 'Access Denied. Only Admins can view all requested events!' });
-    }
     try {
-        const requestedEvents = await RequestedEvent.find();
-        console.log(requestedEvents);
-
-        if (!requestedEvents) {
-            return res.status(200).json([]); // Return empty array instead of null
+        // Check if the user is an admin
+        if (req.userRole !== "Admin") {
+            return res.status(403).json({ error: 'Access Denied. Only Admins can view all requested events!' });
         }
 
+        // Fetch all requested events
+        const requestedEvents = await RequestedEvent.find();
+
+        // Send the response
         res.status(200).json(requestedEvents);
     } catch (error) {
+        console.error("Error fetching requested events:", error);
         next(error);
     }
 };
+
 
 export const getEventsByCategory = async (req, res, next) => {  
     const category = req.params.category;

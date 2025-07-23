@@ -37,8 +37,8 @@ app.use((err, req, res, next) => {
     })
 })
 
-app.listen(port, ()=>{
+app.listen(port, async ()=>{
     
+    await connectDB();
     console.log(`Server is runing in port http://localhost:${port}`);
-    connectDB();
 })

@@ -56,7 +56,7 @@ function App() {
             <Route element={<PrivateRoute />} >
             <Route path="/updateProfile" element={<UpdateProfile />} />
             <Route path='/createEvent' element={<CreateEvent />} />
-            <Route path="/requested-event" element={<RequestedEvent />} />
+            <Route path="/requested_events" element={<RequestedEvent />} />
             <Route path='/my-events' element={<MyEvents />} />
             </Route>
           </Routes>

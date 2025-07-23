@@ -32,7 +32,7 @@ const ProfileMenu = () => {
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
         {currentUser ? (
-          <img src={currentUser.profilePicture} alt="Profile" className="h-8 w-8 rounded-full" />
+          <img src={currentUser.profilepic} alt="Profile" className="h-8 w-8 rounded-full" />
         ) : (
           <UserCircleIcon className={`h-8 w-8 ${theme.text}`} />
         )}
@@ -40,30 +40,61 @@ const ProfileMenu = () => {
       </button>
       {dropdownOpen && (
         <div ref={dropdownRef} className={`absolute right-0 mt-2 w-48 ${theme.background} border border-gray-200 rounded-md shadow-lg`}>
-          <Link
-            to="/my-events"
-            className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-          >
-            My Events
-          </Link>
-          <Link
-            to="/updateProfile"
-            className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-          >
-            Edit Profile
-          </Link>
-          <Link
-            to="/createEvent"
-            className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-          >
-            Create Event
-          </Link>
-          <button
-            onClick={handleLogout}
-            className={`block w-full text-left px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-          >
-            Logout
-          </button>
+          {currentUser?.role === 'Admin' ? (
+            <>
+              <Link
+                to="/requested_events"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Requested Events
+              </Link>
+              <Link
+                to="/createEvent"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Create Event
+              </Link>
+              <Link
+                to="/updateProfile"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Edit Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className={`block w-full text-left px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+            <Link
+                to="/createEvent"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Create Event
+              </Link>
+              <Link
+                to="/my-events"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                My Events
+              </Link>
+              <Link
+                to="/updateProfile"
+                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Edit Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className={`block w-full text-left px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
