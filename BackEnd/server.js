@@ -7,6 +7,7 @@ import userRoute from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import uploadRoute from "./routes/upload.route.js"; 
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoute);
 app.use("/api/event", eventRoute);
 app.use("/api/user", userRoute);
+app.use("/api", uploadRoute); 
 
 // error middleware
 app.use((err, req, res, next) => {

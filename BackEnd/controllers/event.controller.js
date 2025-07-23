@@ -9,6 +9,7 @@ import RequestedEvent from "../models/requestedEvent.model.js";
 export const createEvent = async (req, res, next) => {
   const userId = req.userId;
   const userRole = req.userRole;
+
   const {
     title,
     description,
@@ -18,34 +19,15 @@ export const createEvent = async (req, res, next) => {
     eventType,
     eventCategory,
     host,
+    eventPassword,
   } = req.body;
 
-  const image = req?.files?.map((file) => file.filename);
+  const imageFilenames = req.files?.map(file => file.filename);
 
-  if (
-    !title ||
-    !description ||
-    !date ||
-    !StartTime ||
-    !location ||
-    !eventType ||
-    !eventCategory ||
-    !host
-  ) {
+  if (!title || !description || !date || !StartTime || !location || !eventType || !eventCategory || !host ) {
     return res.status(400).json({ error: "All fields are required!" });
   }
-  console.log(userId, userRole);
-  console.log(
-    title,
-    description,
-    date,
-    StartTime,
-    location,
-    image,
-    eventType,
-    eventCategory,
-    host
-  );
+
   try {
     const existingEvent = await Event.findOne({ title });
     const existingRequestedEvent = await RequestedEvent.findOne({ title });
@@ -54,43 +36,36 @@ export const createEvent = async (req, res, next) => {
       return res.status(400).json({ error: "Event already exists!" });
     }
 
-    if (userRole === "Admin") {
-      const event = new Event({
-        title,
-        description,
-        date,
-        StartTime,
-        location,
-        image,
-        eventType,
-        eventCategory,
-        host,
-        createdBy: userId,
-      });
+    const commonData = {
+      title,
+      description,
+      date,
+      StartTime,
+      location,
+      image: imageFilenames,
+      eventType,
+      eventCategory,
+      host,
+    };
 
-      await event.save();
-      res.status(201).json(event);
-    } else {
-      const requestedEvent = new RequestedEvent({
-        title,
-        description,
-        date,
-        StartTime,
-        location,
-        image,
-        eventType,
-        eventCategory,
-        host,
-        requester: userId,
-      });
-
-      await requestedEvent.save();
-      res.status(201).json(requestedEvent);
+    if (eventType === "Private") {
+      commonData.eventPassword = eventPassword;
     }
+
+    let eventDoc;
+    if (userRole === "Admin") {
+      eventDoc = new Event({ ...commonData, createdBy: userId });
+    } else {
+      eventDoc = new RequestedEvent({ ...commonData, requester: userId });
+    }
+
+    await eventDoc.save();
+    res.status(201).json(eventDoc);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const getAllEvents = async (req, res, next) => {
   try {
@@ -207,63 +182,51 @@ export const approveRequestedEvent = async (req, res, next) => {
 };
 
 export const getMyEvent = async (req, res, next) => {
-  const userRole = req.userRole;
-  const userId = req.params.id; // Assuming userId is set by middleware
-
-  // Validate userId
-
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
-  }
-  if (userId !== req.userId) {
-    return res
-      .status(403)
-      .json({ error: "Access Denied. You can only view your own events!" });
-  }
+  const userId = req.userId;
 
   try {
-    let events;
-    if (userRole === "Admin") {
-      events = await Event.find();
-    } else {
-      const approvedEvents = await Event.find({ createdBy: userId });
-      const pendingEvents = await RequestedEvent.find({ createdBy: userId });
-      events = [...approvedEvents, ...pendingEvents];
-    }
+    const approvedEvents = await Event.find({ createdBy: userId });
+    const requestedEvents = await RequestedEvent.find({ requester: userId });
 
-    if (events.length === 0) {
-      return res.status(404).json({ error: "No events found for this user" });
-    }
+    // Combine both with a source flag to identify
+    const allEvents = [
+      ...approvedEvents.map((e) => ({ ...e._doc, source: "event" })),
+      ...requestedEvents.map((e) => ({ ...e._doc, source: "requested" })),
+    ];
 
-    res.status(200).json(events);
+    res.status(200).json(allEvents);
   } catch (error) {
     next(error);
   }
 };
 
+
 export const getMyEventDetails = async (req, res, next) => {
-  const userRole = req.userRole;
   const userId = req.userId;
+  const userRole = req.userRole;
   const eventId = req.params.id;
 
-  try {
-    let event;
+  if (!eventId) {
+    return res.status(400).json({ error: "Event ID is required" });
+  }
 
-    // Admin can view any event, whether approved or requested
+  try {
+    let event = null;
+
     if (userRole === "Admin") {
-      event = await Event.findById(eventId);
+      // Admin can get any event by ID from either collection
+      event = await Event.findById(eventId) || await RequestedEvent.findById(eventId);
     } else {
-      // For a regular user, fetch from requestedEvent or Event schema based on user
-      event =
-        (await Event.findOne({ _id: eventId, createdBy: userId })) ||
-        (await RequestedEvent.findOne({ _id: eventId, createdBy: userId }));
+      // Regular user can only get events they created/requested
+      event = await Event.findOne({ _id: eventId, createdBy: userId });
+
+      if (!event) {
+        event = await RequestedEvent.findOne({ _id: eventId, requester: userId });
+      }
     }
 
-    // If no event found, return a 404 error
     if (!event) {
-      return res
-        .status(404)
-        .json({ error: "Event not found or access denied" });
+      return res.status(404).json({ error: "Event not found or access denied" });
     }
 
     res.status(200).json(event);
@@ -271,6 +234,7 @@ export const getMyEventDetails = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const getEventDetails = async (req, res, next) => {
   const eventId = req.params.id;
