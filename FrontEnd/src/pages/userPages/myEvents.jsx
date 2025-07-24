@@ -25,7 +25,8 @@ const MyEvents = () => {
           <motion.div
             key={event._id}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl"
-            onClick={() => navigate(`/events/${event._id}`)}
+            onClick={() => navigate(`/my-events/update/${event._id}`)}
+
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.03 }}

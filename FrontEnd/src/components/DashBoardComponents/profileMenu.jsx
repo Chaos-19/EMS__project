@@ -16,7 +16,6 @@ const ProfileMenu = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
-    // Add any additional logout logic here
   };
 
   const handleBlur = (e) => {
@@ -38,26 +37,31 @@ const ProfileMenu = () => {
         )}
         <span className="font-semibold">{currentUser?.fullName}</span>
       </button>
+
       {dropdownOpen && (
-        <div ref={dropdownRef} className={`absolute right-0 mt-2 w-48 ${theme.background} border border-gray-200 rounded-md shadow-lg`}>
+        <div ref={dropdownRef} className={`absolute right-0 mt-2 w-56 ${theme.background} border border-gray-200 rounded-md shadow-lg z-50`}>
           {currentUser?.role === 'Admin' ? (
             <>
-              <Link
-                to="/requested_events"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+              <Link to="/requested_events" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 Requested Events
               </Link>
-              <Link
-                to="/createEvent"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+              <Link to="/createEvent" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 Create Event
               </Link>
-              <Link
-                to="/updateProfile"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+
+              {/* Reports Group */}
+              <div className="px-4 py-2 font-medium text-sm text-gray-500">Reports</div>
+              <Link to="/admin/export" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
+                Export Data
+              </Link>
+              <Link to="/admin/stats" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
+                Event Stats
+              </Link>
+              <Link to="/admin/tickets" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
+                Event Tickets
+              </Link>
+
+              <Link to="/updateProfile" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 Edit Profile
               </Link>
               <button
@@ -69,22 +73,16 @@ const ProfileMenu = () => {
             </>
           ) : (
             <>
-            <Link
-                to="/createEvent"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+              <Link to="/createEvent" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 Create Event
               </Link>
-              <Link
-                to="/my-events"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+              <Link to="/my-events" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 My Events
               </Link>
-              <Link
-                to="/updateProfile"
-                className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}
-              >
+              <Link to="/my-tickets" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
+                My Tickets
+              </Link>
+              <Link to="/updateProfile" className={`block px-4 py-2 ${isLightMode ? theme.text : 'text-black'} hover:bg-gray-100`}>
                 Edit Profile
               </Link>
               <button
