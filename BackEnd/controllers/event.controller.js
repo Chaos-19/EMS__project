@@ -170,7 +170,7 @@ export const approveRequestedEvent = async (req, res, next) => {
       cron.schedule("*/3 * * * *", async () => {
         await RequestedEvent.findByIdAndDelete(eventId);
         console.log(
-          `Requested event with ID ${eventId} has been deleted after 5 minutes.`
+          `Requested event with ID ${eventId} has been deleted after 3 minutes.`
         );
       });
 
