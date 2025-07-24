@@ -1,42 +1,41 @@
 // hooks/useUpdateEvent.js
-import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateEventSuccess, updateEventFailure } from "../redux/eventStore/eventSlice";
+import {
+  updateEventStart,
+  updateEventSuccess,
+  updateEventFailure,
+} from "../../redux/eventStore/eventSlice";
 
 export const useUpdateEvent = () => {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const updateEvent = async (eventId, updatedData, token) => {
-    setLoading(true);
-    setError(null);
-
+    dispatch(updateEventStart());
+    console.log("Updating event with ID:", eventId);
+    console.log("Updated data:", updatedData);
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${eventId}`, {
+      const res = await fetch(`/api/event/update-event/${eventId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Make sure token is passed correctly
         },
-        body: JSON.stringify(updatedData),
+        body: (updatedData),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        dispatch(updateEventFailure(data.error || "Update failed"));
-        setError(data.error || "Update failed");
-      } else {
-        dispatch(updateEventSuccess(data.event));
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update event");
       }
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-      dispatch(updateEventFailure(err.message));
-    } finally {
-      setLoading(false);
+
+      const data = await res.json();
+      dispatch(updateEventSuccess(data.event));
+      return data.event;
+    } catch (error) {
+      console.error("Update Event Error:", error.message);
+      dispatch(updateEventFailure(error.message));
     }
   };
 
-  return { updateEvent, loading, error };
+  return { updateEvent };
 };

@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join( "uploads")));
 app.use("/api/auth", authRoute);
 app.use("/api/event", eventRoute);
 app.use("/api/user", userRoute);

@@ -276,6 +276,21 @@ export const updateEvent = async (req, res, next) => {
     host,
   } = req.body;
 
+const imageFilenames = req.files?.map(file => file.filename);
+console.log("Updating event with ID:", eventId);
+console.log("Updated data:", {
+  title,
+  description,
+  date,
+  StartTime,
+  location,
+  image,
+  eventType,  
+  eventCategory,
+  host,
+  imageFilenames,
+});
+
   try {
     let event;
 
@@ -292,7 +307,8 @@ export const updateEvent = async (req, res, next) => {
       }
 
       // Admin can only update their own event, not others'
-      if (event.createdBy.toString() !== userId.toString()) {
+      if (event.createdBy?.toString() !== userId?.toString() && 
+          event.requester?.toString() !== userId?.toString()) {
         return res.status(403).json({
           error: "Access Denied. You can only update your own event!",
         });
@@ -311,7 +327,8 @@ export const updateEvent = async (req, res, next) => {
       }
 
       // User can only update their own event, regardless of whether it's approved or pending
-      if (event.createdBy.toString() !== userId.toString()) {
+      if (event.createdBy?.toString() !== userId?.toString() && 
+          event.requester?.toString() !== userId?.toString()) {
         return res.status(403).json({
           error: "Access Denied. You can only update your own event!",
         });
@@ -324,7 +341,7 @@ export const updateEvent = async (req, res, next) => {
     event.date = date;
     event.StartTime = StartTime;
     event.location = location;
-    event.image = image;
+    event.image = imageFilenames;
     event.eventType = eventType;
     event.eventCategory = eventCategory;
     event.host = host;
@@ -363,7 +380,12 @@ export const deleteEvent = async (req, res, next) => {
     }
 
     // User can only delete their own event, regardless of whether it's approved or pending
-    if (event.createdBy.toString() !== userId.toString()) {
+    if (event.requester?.toString() !== userId?.toString()) {
+
+      console.log("User trying to delete event they don't own:", {
+        userId,
+        event,
+      });
       return res
         .status(403)
         .json({ error: "Access Denied. You can only delete your own event!" });

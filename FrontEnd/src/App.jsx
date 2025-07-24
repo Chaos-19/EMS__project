@@ -24,6 +24,7 @@ import MyEvents from './pages/userPages/myEvents';
 import PrivateRoute from './components/privateRoute/privateRoute';
 import BookingPage from './pages/EventPages/bookingPage';
 import ApproveEvent from './pages/eventAdmin Page/approveEvent';
+import UpdateEvent from './pages/userPages/updateEvents';
 function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -61,6 +62,7 @@ function App() {
             <Route path='/my-events' element={<MyEvents />} />
             <Route path="/booking/:eventId" element={<BookingPage />} />
             <Route path="/requested-event/approve/:eventId" element={<ApproveEvent />} />
+            <Route path="/my-events/update/:id" element={<UpdateEvent />} />
             </Route>
           </Routes>
         </Layout>
